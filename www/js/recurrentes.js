@@ -168,6 +168,7 @@ function showRecContextMenu(id) {
 function nuevaRecurrente() {
   state._recEditando = null;
   _resetFormRecurrente();
+  Sound.click();
   navigate('screen-rec-nueva');
   document.getElementById('rec-form-title').textContent = 'Nueva Plantilla Recurrente';
 }
@@ -223,10 +224,10 @@ function guardarRecurrente() {
   const serie = document.getElementById('rec-serie').value.trim();
   const notas = document.getElementById('rec-notas').value.trim();
 
-  if (!nombre) { showToast('Ponle un nombre a la plantilla'); return; }
-  if (!state.emisor) { showToast('Seleccioná un emisor'); return; }
-  if (!state.cliente) { showToast('Seleccioná un cliente'); return; }
-  if (state.productos.length === 0) { showToast('Agregá al menos un producto'); return; }
+  if (!nombre) { showToast('Ponle un nombre a la plantilla'); Sound.error(); return; }
+  if (!state.emisor) { showToast('Seleccioná un emisor'); Sound.error(); return; }
+  if (!state.cliente) { showToast('Seleccioná un cliente'); Sound.error(); return; }
+  if (state.productos.length === 0) { showToast('Agregá al menos un producto'); Sound.error(); return; }
 
   const id = state._recEditando || `rec_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 
@@ -264,6 +265,7 @@ function guardarRecurrente() {
   showToast(state._recEditando ? 'Plantilla actualizada' : 'Plantilla creada');
   state._recEditando = null;
   goBack();
+  Sound.save();
 }
 
 function toggleRecurrenteActiva(id) {
@@ -273,10 +275,13 @@ function toggleRecurrenteActiva(id) {
   recs[idx].activa = !recs[idx].activa;
   saveRecurrentes(recs);
   showToast(recs[idx].activa ? 'Plantilla activada' : 'Plantilla pausada');
+  Sound.tap();
 }
 
 function eliminarRecurrente(id) {
+  Sound.tap();
   showConfirmDialog('🗑️', 'Eliminar plantilla', '¿Eliminar esta plantilla recurrente?', () => {
+    Sound.delete();
     const recs = getRecurrentes().filter(r => r.id !== id);
     saveRecurrentes(recs);
     renderRecurrentes();

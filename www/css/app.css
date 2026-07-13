@@ -146,6 +146,14 @@ body {
   transition: background 0.15s; flex-shrink: 0;
 }
 .btn-back:active { background: rgba(255,255,255,0.18); }
+.btn-sound {
+  background: rgba(255,255,255,0.08); border: none; cursor: pointer;
+  color: var(--white); padding: 0;
+  width: 34px; height: 34px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s; flex-shrink: 0; margin-left: 4px;
+}
+.btn-sound:active { background: rgba(255,255,255,0.18); }
 
 /* ── Screens container ─────────────────────────────────────── */
 .screens { flex: 1; overflow: hidden; position: relative; min-height: 0; }

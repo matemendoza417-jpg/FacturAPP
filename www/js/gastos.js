@@ -137,6 +137,7 @@ function mostrarFormGasto(gasto) {
   _gastoEditando = gasto || null;
   const form = document.getElementById('gasto-form');
   if (!form) return;
+  Sound.tap();
 
   document.getElementById('gasto-form-title').textContent = gasto ? 'Editar Gasto' : 'Nuevo Gasto';
   document.getElementById('gasto-descripcion').value = gasto ? (gasto.descripcion || '') : '';
@@ -153,6 +154,7 @@ function cancelarFormGasto() {
   const form = document.getElementById('gasto-form');
   if (form) form.classList.add('hidden');
   _gastoEditando = null;
+  Sound.tap();
 }
 
 function guardarGastoForm() {
@@ -163,8 +165,8 @@ function guardarGastoForm() {
   const metodo = document.getElementById('gasto-metodo').value.trim();
   const notas = document.getElementById('gasto-notas').value.trim();
 
-  if (!descripcion) { showToast('Ponle una descripción al gasto'); return; }
-  if (monto <= 0) { showToast('El monto debe ser mayor a 0'); return; }
+  if (!descripcion) { showToast('Ponle una descripción al gasto'); Sound.error(); return; }
+  if (monto <= 0) { showToast('El monto debe ser mayor a 0'); Sound.error(); return; }
 
   const gasto = {
     id: _gastoEditando ? _gastoEditando.id : _gastoId(),
@@ -182,6 +184,7 @@ function guardarGastoForm() {
   cancelarFormGasto();
   renderGastos();
   showToast(_gastoEditando ? 'Gasto actualizado' : 'Gasto guardado');
+  Sound.save();
 }
 
 function editarGasto(id) {
@@ -190,7 +193,9 @@ function editarGasto(id) {
 }
 
 function eliminarGasto(id) {
+  Sound.tap();
   showConfirmDialog('🗑️', 'Eliminar gasto', '¿Eliminar este gasto?', () => {
+    Sound.delete();
     const gastos = getGastos().filter(g => g.id !== id);
     saveGastos(gastos);
     renderGastos();

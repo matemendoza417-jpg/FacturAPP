@@ -124,7 +124,7 @@
       setTimeout(() => playTone(900, 0.05, 'sine', 0.04), 20);
     },
 
-    toggle() {
+    switchClick() {
       playTone(1200, 0.03, 'sine', 0.05);
       setTimeout(() => playTone(1400, 0.03, 'sine', 0.04), 20);
     },

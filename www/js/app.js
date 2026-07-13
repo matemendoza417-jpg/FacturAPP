@@ -129,6 +129,7 @@ function showAuthLogin() {
   document.getElementById('auth-form-register')?.classList.add('hidden');
   document.getElementById('auth-form-recovery')?.classList.add('hidden');
   _clearAuthError();
+  Sound.tap();
 }
 
 function showAuthRecovery() {
@@ -136,6 +137,7 @@ function showAuthRecovery() {
   document.getElementById('auth-form-register')?.classList.add('hidden');
   document.getElementById('auth-form-recovery')?.classList.remove('hidden');
   _clearAuthError();
+  Sound.tap();
 }
 
 async function handleAuthRecovery() {
@@ -1028,7 +1030,7 @@ function toggleRetencion() {
   const chk = document.getElementById('chk-retencion');
   const field = document.getElementById('retencion-field');
   if (chk && field) field.classList.toggle('hidden', !chk.checked);
-  Sound.toggle();
+  Sound.switchClick();
 }
 
 // ── STEP 5: RESUMEN ──────────────────────────────────────────
@@ -2651,8 +2653,9 @@ function renderHistorial() {
 }
 
 function clearHistorial() {
+  Sound.tap();
   showConfirmDialog('🗑️', 'Borrar historial', '¿Borrar todo el historial de IVA? Esta acción no se puede deshacer.',
-    () => { clearIvaHistory(); renderHistorial(); showToast('Historial borrado'); }, null);
+    () => { clearIvaHistory(); renderHistorial(); showToast('Historial borrado'); Sound.delete(); }, null);
 }
 
 // ── FACTURAS ─────────────────────────────────────────────────
@@ -3520,21 +3523,23 @@ function mostrarFormSerie(serie) {
   if (nombreInput) nombreInput.value = serie ? serie.nombre : '';
   if (prefijoInput) prefijoInput.value = serie ? serie.prefijo : '';
   form.classList.remove('hidden');
+  Sound.tap();
 }
 
 function cancelarFormSerie() {
   const form = document.getElementById('series-form');
   if (form) form.classList.add('hidden');
   _serieEditando = null;
+  Sound.tap();
 }
 
 function guardarSerie() {
   const nombre = (document.getElementById('serie-nombre')?.value || '').trim();
   const prefijo = (document.getElementById('serie-prefijo')?.value || '').trim().toUpperCase();
 
-  if (!nombre) { showToast('Introduce un nombre para la serie'); return; }
-  if (!prefijo) { showToast('Introduce un prefijo (ej: FACT)'); return; }
-  if (prefijo.length > 10) { showToast('El prefijo no puede tener más de 10 caracteres'); return; }
+  if (!nombre) { showToast('Introduce un nombre para la serie'); Sound.error(); return; }
+  if (!prefijo) { showToast('Introduce un prefijo (ej: FACT)'); Sound.error(); return; }
+  if (prefijo.length > 10) { showToast('El prefijo no puede tener más de 10 caracteres'); Sound.error(); return; }
 
   const wasEditing = !!_serieEditando;
 
@@ -3558,6 +3563,7 @@ function guardarSerie() {
   cancelarFormSerie();
   renderSeriesList();
   showToast(wasEditing ? 'Serie actualizada' : 'Serie creada');
+  Sound.save();
 }
 
 function editarSerie(id) {
@@ -3667,6 +3673,7 @@ function setCatalogoCatFiltro(cat) {
 function mostrarFormCatalogo(item) {
   const form = document.getElementById('catalogo-form');
   if (!form) return;
+  Sound.tap();
   _catalogoEditando = item || null;
   document.getElementById('catalogo-form-title').textContent = item ? 'Editar Producto' : 'Nuevo Producto';
   document.getElementById('cat-nombre').value = item ? item.nombre : '';
@@ -3700,6 +3707,7 @@ function cancelarFormCatalogo() {
   const form = document.getElementById('catalogo-form');
   if (form) form.classList.add('hidden');
   _catalogoEditando = null;
+  Sound.tap();
 }
 
 function guardarCatalogoItem() {
@@ -3708,7 +3716,7 @@ function guardarCatalogoItem() {
   const precio = parseFloat(document.getElementById('cat-precio').value) || 0;
   const categoria = (document.getElementById('cat-categoria').value || '').trim();
 
-  if (!nombre) { showToast('Introduce un nombre para el producto'); return; }
+  if (!nombre) { showToast('Introduce un nombre para el producto'); Sound.error(); return; }
 
   const item = {
     id: _catalogoEditando ? _catalogoEditando.id : null,
@@ -3719,6 +3727,7 @@ function guardarCatalogoItem() {
   cancelarFormCatalogo();
   renderCatalogoList();
   showToast(_catalogoEditando ? 'Producto actualizado' : 'Producto guardado');
+  Sound.save();
 }
 
 function editarCatalogo(id) {
@@ -3728,7 +3737,9 @@ function editarCatalogo(id) {
 }
 
 function eliminarCatalogoItem(id) {
+  Sound.tap();
   showConfirmDialog('🗑️', 'Eliminar producto', '¿Eliminar este producto del catálogo?', () => {
+    Sound.delete();
     eliminarCatalogo(id);
     renderCatalogoList();
     showToast('Producto eliminado');
@@ -3791,8 +3802,10 @@ function abrirCatalogo() {
   const catalogo = getCatalogo();
   if (!catalogo.length) {
     showToast('El catálogo está vacío. Agrega productos primero.');
+    Sound.error();
     return;
   }
+  Sound.tap();
 
   let modal = document.getElementById('modal-catalogo');
   if (modal) modal.remove();
@@ -3839,6 +3852,7 @@ function abrirCatalogo() {
 function seleccionarDelCatalogo(nombre, precio) {
   const modal = document.getElementById('modal-catalogo');
   if (modal) modal.remove();
+  Sound.select();
   if (typeof addProducto === 'function') {
     addProducto();
     setTimeout(() => {
@@ -4165,6 +4179,7 @@ function nuevaRectificativa() {
   state.docType = 'factura';
   state._rectificativaRef = 'nueva';
   state._skipResetNueva = false;
+  Sound.click();
   navigate('screen-nueva');
   goToStep(1);
   showToast('Creando nota de crédito. Marca los productos con precio negativo para abonar.');

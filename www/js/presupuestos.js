@@ -88,6 +88,7 @@ function presupuestoNuevo() {
   state._editando            = null;
   state._editandoPresupuesto = null;
   state._skipResetNueva      = false;
+  Sound.click();
   navigate('screen-nueva');
 }
 
@@ -217,6 +218,7 @@ async function presupuestoGuardarDesdeWizard() {
     actualizado_en:    new Date().toISOString(),
   };
 
+  Sound.generate();
   let pdf;
   try {
     pdf = await generarPresupuestoPDF(data);
@@ -239,6 +241,7 @@ async function presupuestoGuardarDesdeWizard() {
     renderPresupuestos();
   }
 
+  Sound.save();
   showConfirmDialog(
     '✈️', '¿Enviar a Telegram?',
     `Presupuesto guardado. ¿Querés enviar "${pdf.nombre}" por Telegram?`,
@@ -253,7 +256,9 @@ function presupuestoEliminar(id) {
   const item = getPresupuestos().find(p => p.id === id);
   if (!item) return;
 
+  Sound.tap();
   showConfirmDialog('🗑️', 'Eliminar presupuesto', `Se eliminará "${item.numero}" permanentemente.`, () => {
+    Sound.delete();
     // BUG FIX: filtramos sobre una lista fresca, luego forzamos escritura
     const updated = getPresupuestos().filter(p => p.id !== id);
     savePresupuestos(updated);   // escribe siempre, incluso [] vacío
