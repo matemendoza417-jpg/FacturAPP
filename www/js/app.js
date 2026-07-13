@@ -1013,6 +1013,7 @@ function toggleRetencion() {
   const chk = document.getElementById('chk-retencion');
   const field = document.getElementById('retencion-field');
   if (chk && field) field.classList.toggle('hidden', !chk.checked);
+  Sound.toggle();
 }
 
 // ── STEP 5: RESUMEN ──────────────────────────────────────────
@@ -1113,6 +1114,7 @@ async function generarPDF() {
 
 async function _doGenerarPDF(sobrescribirNombre = null) {
   const t        = calcTotales();
+  Sound.generate();
   const fechaRaw = document.getElementById('fac-fecha').value;
   const [y, m, d] = fechaRaw.split('-');
   const fechaFmt  = `${d}/${m}/${y}`;
@@ -1216,6 +1218,7 @@ async function _doGenerarPDF(sobrescribirNombre = null) {
     crearRecordatorioCobro(numFac, state.cliente.nombre, t.total, fechaFmt);
     showToast('📅 Recordatorio de cobro programado (30 días)');
   }
+  Sound.success();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1525,10 +1528,13 @@ async function confirmarEnvioTelegram() {
 
   if (okCount > 0 && errCount === 0) {
     showModal('🎉', '¡Enviado!', `"${pdfData.nombre}" se envió correctamente a ${okCount} contacto(s).`);
+    Sound.send();
   } else if (okCount > 0 && errCount > 0) {
     showModal('⚠️', 'Envío parcial', `Enviado a ${okCount}, falló en ${errCount}.\n${lastErr}`);
+    Sound.notification();
   } else {
     showModal('❌', 'Error al enviar', `${lastErr}\n\nRevisa la vinculación en Configuración.`);
+    Sound.error();
   }
 }
 
@@ -1635,8 +1641,9 @@ function iniciarVinculacion() {
   var phoneInput = document.getElementById('tg-phone-input');
   var name = nameInput ? nameInput.value.trim() : '';
   var phone = phoneInput ? phoneInput.value.trim() : '';
-  if (!name) { showToast('Pon un nombre para el contacto'); return; }
-  if (!phone) { showToast('Ingresa tu número de teléfono'); return; }
+  if (!name) { showToast('Pon un nombre para el contacto'); Sound.error(); return; }
+  if (!phone) { showToast('Ingresa tu número de teléfono'); Sound.error(); return; }
+  Sound.tap();
 
   var code = generarCodigoAleatorio();
   localStorage.setItem('tg_pending_code', code);
@@ -1807,6 +1814,7 @@ function _iniciarPolling(code, phone, name) {
 
 function _mostrarExitoVinculacion() {
   const overlay = document.getElementById('modal-overlay');
+  Sound.success();
   if (!overlay) return;
   const barEl = document.getElementById('tgVincBar');
   const statusEl = document.getElementById('tgVincStatus');
@@ -1857,6 +1865,7 @@ function eliminarContactoTelegram(index) {
   var contacts = _getTgContacts();
   var c = contacts[index];
   if (!c) return;
+  Sound.tap();
   showConfirmDialog(
     '⚠️', 'Eliminar contacto',
     '¿Deseas desvincular a "' + escapeHtml(c.name) + '"?',
@@ -1875,6 +1884,7 @@ function desvincularTelegram() {
   localStorage.removeItem('tg_phone');
   renderTelegramConfig();
   showToast('Todos los contactos desvinculados');
+  Sound.tap();
 }
 
 // ── EDITAR FACTURA ────────────────────────────────────────────
@@ -1882,8 +1892,10 @@ async function editarFactura(nombre) {
   const datos = await leerDatosFactura(nombre);
   if (!datos) {
     showToast('No se encontraron datos para esta factura');
+    Sound.error();
     return;
   }
+  Sound.tap();
 
   state.docType              = 'factura';
   state.emisor               = datos.emisor    || null;

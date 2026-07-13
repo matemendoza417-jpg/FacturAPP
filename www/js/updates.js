@@ -4,7 +4,7 @@
 // ============================================================
 
 const CURRENT_VERSION = '3.1.0';
-const UPDATE_CHECK_URL = 'https://raw.githubusercontent.com/FacturAPP/facturapp/main/version.json';
+const UPDATE_CHECK_URL = 'https://gist.githubusercontent.com/matemendoza417-jpg/e933299e7af893624c2fa8123ee28fb8/raw/version.json';
 const UPDATE_CHECK_INTERVAL = 24 * 60 * 60 * 1000; // 24 horas
 
 let _updateData = null;
