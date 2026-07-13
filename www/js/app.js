@@ -253,13 +253,7 @@ window.addEventListener('load', () => {
   if (fechaEl) fechaEl.value = today;
 
   // Verificar licencia — BLOQUEO TOTAL si no está activada
-  try {
-    if (typeof isAppLicensed === 'function' && !isAppLicensed()) {
-      document.getElementById('app').classList.add('hidden');
-      setTimeout(() => showLicenseScreen(), 1500);
-      return;
-    }
-  } catch(_) {}
+  const sinLicencia = typeof isAppLicensed === 'function' && !isAppLicensed();
 
   // Verificar actualizaciones
   try {
@@ -274,17 +268,21 @@ window.addEventListener('load', () => {
     var splash = document.getElementById('splash');
     var app = document.getElementById('app');
     if (splash) splash.classList.add('fade-out');
-    if (app) app.classList.remove('hidden');
-    // Precargar emisores sólo al abrir, no bloquea la UI
-    requestAnimationFrame(() => {
-      renderEmisorList();
-    });
-
-    // Check auth: show login if Supabase is configured and no session
-    if (sbIsConfigured() && !localStorage.getItem('sb_skip_auth')) {
-      sbGetUser().then(user => {
-        if (!user) _showAuthScreen();
-      }).catch(() => {});
+    if (sinLicencia) {
+      // Sin licencia: ocultar app, mostrar modal de licencia
+      if (app) app.classList.add('hidden');
+      setTimeout(() => showLicenseScreen(), 800);
+    } else {
+      // Con licencia: cargar app normal
+      if (app) app.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        renderEmisorList();
+      });
+      if (sbIsConfigured() && !localStorage.getItem('sb_skip_auth')) {
+        sbGetUser().then(user => {
+          if (!user) _showAuthScreen();
+        }).catch(() => {});
+      }
     }
   }, 900);
 
