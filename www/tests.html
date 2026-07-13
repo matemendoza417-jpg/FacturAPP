@@ -87,30 +87,30 @@
     //  TESTS: retencion.js
     // ══════════════════════════════════════════════════════════
 
-    describe('Retenciones — Mauro', function () {
-      it('Mauro sin retención: showInPdf=true, applyToTotal=false', function () {
-        var r = calcularModeloRetencion({ alias: 'Mauro' }, false, 19);
+    describe('Retenciones — emisor2 (siempre visible)', function () {
+      it('Sin retención: showInPdf=true, applyToTotal=false', function () {
+        var r = calcularModeloRetencion({ alias: 'emisor2' }, false, 19);
         expect(r.showInPdf).toBe(true);
         expect(r.applyToTotal).toBe(false);
         expect(r.rate).toBe(19);
       });
 
-      it('Mauro con retención: showInPdf=true, applyToTotal=true', function () {
-        var r = calcularModeloRetencion({ alias: 'Mauro' }, true, 19);
+      it('Con retención: showInPdf=true, applyToTotal=true', function () {
+        var r = calcularModeloRetencion({ alias: 'emisor2' }, true, 19);
         expect(r.showInPdf).toBe(true);
         expect(r.applyToTotal).toBe(true);
       });
     });
 
-    describe('Retenciones — Lorena', function () {
-      it('Lorena sin retención: showInPdf=false, applyToTotal=false', function () {
-        var r = calcularModeloRetencion({ alias: 'Lorena' }, false, 19);
+    describe('Retenciones — emisor1 (genérico)', function () {
+      it('Sin retención: showInPdf=false, applyToTotal=false', function () {
+        var r = calcularModeloRetencion({ alias: 'emisor1' }, false, 19);
         expect(r.showInPdf).toBe(false);
         expect(r.applyToTotal).toBe(false);
       });
 
-      it('Lorena con retención: showInPdf=true, applyToTotal=true', function () {
-        var r = calcularModeloRetencion({ alias: 'Lorena' }, true, 19);
+      it('Con retención: showInPdf=true, applyToTotal=true', function () {
+        var r = calcularModeloRetencion({ alias: 'emisor1' }, true, 19);
         expect(r.showInPdf).toBe(true);
         expect(r.applyToTotal).toBe(true);
       });
@@ -243,17 +243,17 @@
     });
 
     describe('Storage — Emisores predefinidos', function () {
-      it('getEmisores incluye Mauro y Lorena', function () {
+      it('getEmisores incluye Emisor1 y Emisor2', function () {
         var emisores = getEmisores();
         var names = emisores.map(function(e) { return e.alias; });
-        expect(names).toContain('Mauro');
-        expect(names).toContain('Lorena');
+        expect(names).toContain('Emisor1');
+        expect(names).toContain('Emisor2');
       });
 
-      it('getClientes incluye Iván', function () {
+      it('getClientes incluye Cliente1', function () {
         var clientes = getClientes();
         var names = clientes.map(function(c) { return c.alias; });
-        expect(names).toContain('Iván');
+        expect(names).toContain('Cliente1');
       });
     });
 

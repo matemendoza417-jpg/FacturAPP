@@ -223,8 +223,8 @@ function generarFacturaPDF(datos) {
         setColor(NEGRO);
         doc.setFont('helvetica', 'normal');
 
-        const cant = item.cantidad % 1 === 0
-          ? String(Math.round(item.cantidad)) : String(item.cantidad);
+        var c = Number(item.cantidad) || 0;
+        const cant = c % 1 === 0 ? String(Math.round(c)) : c.toFixed(2);
         doc.setFontSize(8);
         doc.text(cant, X_CANT + COL_CANT / 2, y + filaH * 0.55, { align: 'center' });
 

@@ -13,11 +13,15 @@ var FacturAPPConfig = (function () {
     return localStorage.getItem('tg_bot_token') || '';
   }
 
+  function _getTgUsername() {
+    return localStorage.getItem('tg_bot_username') || '';
+  }
+
   // ── Configuración pública ──────────────────────────────────
   return {
-    // Bot de Telegram
-    TG_BOT_TOKEN: _getTgToken(),
-    TG_BOT_USERNAME: localStorage.getItem('tg_bot_username') || '',
+    // Bot de Telegram — getters que leen de localStorage en vivo
+    get TG_BOT_TOKEN() { return _getTgToken(); },
+    get TG_BOT_USERNAME() { return _getTgUsername(); },
 
     // Backup automático
     AUTO_BACKUP_ENABLED: true,

@@ -7,9 +7,16 @@
 // ============================================================
 
 // ── BOT CENTRAL ───────────────────────────────────────────────
-// Token cargado desde config.js (ofuscado). Ver js/config.js
 function _getTgBotToken() {
-  return typeof FacturAPPConfig !== 'undefined' ? FacturAPPConfig.TG_BOT_TOKEN : '';
+  var t = typeof FacturAPPConfig !== 'undefined' ? FacturAPPConfig.TG_BOT_TOKEN : '';
+  if (t) return t;
+  return localStorage.getItem('tg_bot_token') || '';
+}
+
+function _getTgBotUsername() {
+  var u = typeof FacturAPPConfig !== 'undefined' ? FacturAPPConfig.TG_BOT_USERNAME : '';
+  if (u) return u;
+  return localStorage.getItem('tg_bot_username') || '';
 }
 
 // ── STORAGE KEYS ──────────────────────────────────────────────
@@ -1394,6 +1401,7 @@ function _hasTgContacts() {
 }
 
 var _tgPollingTimeout = null;
+var _tgPollOffset = 0;
 
 function generarCodigoAleatorio() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -1579,7 +1587,7 @@ function renderTelegramConfig() {
         Vincula uno o varios números para enviar facturas por Telegram.
       </p>
       <p class="tg-config-sub tg-sub-new" style="margin-top:4px;font-weight:600;color:#7C4DFF">
-        @${FacturAPPConfig.TG_BOT_USERNAME || 'tu_bot_username'}
+        @${_getTgBotUsername() || 'tu_bot_username'}
       </p>
     </div>
 
@@ -1644,12 +1652,40 @@ function renderTelegramConfig() {
       </div>
     </div>
 
+    <div class="form-card" style="margin-top:12px;background:#FFF8E1;border-color:#FFE082">
+      <div style="font-size:13px;color:#5D4037;line-height:1.6;margin-bottom:10px">
+        <strong>🤖 Configuración del Bot:</strong> Solo si importaste un backup con token.
+      </div>
+      <div class="form-row">
+        <label>Token del Bot</label>
+        <input type="text" id="tg-token-input" value="${escapeHtml(localStorage.getItem('tg_bot_token') || '')}" placeholder="123456:ABCdef..." style="font-family:monospace;font-size:14px" />
+      </div>
+      <div class="form-row">
+        <label>Username del Bot</label>
+        <input type="text" id="tg-username-input" value="${escapeHtml(localStorage.getItem('tg_bot_username') || '')}" placeholder="mi_factura_bot" style="font-size:14px" />
+      </div>
+      <button class="btn-secondary full-width" onclick="guardarConfigBotTelegram()" style="margin-top:4px">Guardar configuración del bot</button>
+    </div>
+
     <div class="form-card" style="margin-top:12px;background:#EBF5FF;border-color:#C5DEFF">
       <div style="font-size:13px;color:#1a5276;line-height:1.6">
         <strong>🔒 Privacidad:</strong> Los datos se guardan localmente en tu dispositivo.
       </div>
     </div>
   `;
+}
+
+function guardarConfigBotTelegram() {
+  var token = document.getElementById('tg-token-input');
+  var username = document.getElementById('tg-username-input');
+  if (token && token.value.trim()) {
+    localStorage.setItem('tg_bot_token', token.value.trim());
+  }
+  if (username && username.value.trim()) {
+    localStorage.setItem('tg_bot_username', username.value.trim());
+  }
+  showToast('Configuración del bot guardada');
+  Sound.tap();
 }
 
 // ── VINCULACIÓN AUTOMÁTICA ──────────────────────────────────
@@ -1668,7 +1704,7 @@ function iniciarVinculacion() {
   localStorage.setItem('tg_pending_phone', phone);
   localStorage.setItem('tg_pending_name', name);
 
-  var tgUrl = 'https://t.me/' + (FacturAPPConfig.TG_BOT_USERNAME || 'tu_bot_username') + '?start=' + code;
+  var tgUrl = 'https://t.me/' + (_getTgBotUsername() || 'tu_bot_username') + '?start=' + code;
 
   _mostrarModalVinculacion(code, phone, name, tgUrl);
 }
@@ -1776,7 +1812,7 @@ function _iniciarPolling(code, phone, name) {
     var fetchOpts = { signal: abortCtrl ? abortCtrl.signal : undefined };
 
     var url = 'https://api.telegram.org/bot' + _getTgBotToken() +
-              '/getUpdates?offset=1&timeout=0&_=' + Date.now();
+              '/getUpdates?offset=' + (_tgPollOffset + 1) + '&timeout=0&_=' + Date.now();
 
     fetch(url, fetchOpts)
       .then(function (r) { return r.json(); })
@@ -1803,7 +1839,7 @@ function _iniciarPolling(code, phone, name) {
           if (!txt || !fromId) continue;
 
           var t = txt.trim();
-          if (t === '/start ' + code || t === '/start@' + (FacturAPPConfig.TG_BOT_USERNAME || 'tu_bot_username') + ' ' + code ||
+          if (t === '/start ' + code || t === '/start@' + (_getTgBotUsername() || 'tu_bot_username') + ' ' + code ||
               (t.indexOf('/start') === 0 && t.indexOf(code) > 0)) {
             _addTgContact(fromId, phone, name);
             localStorage.removeItem('tg_pending_code');
@@ -1816,6 +1852,9 @@ function _iniciarPolling(code, phone, name) {
           }
         }
 
+        for (var j = 0; j < updates.length; j++) {
+          if (updates[j].update_id > _tgPollOffset) _tgPollOffset = updates[j].update_id;
+        }
         var hint = updates.length > 0 ? ' (' + updates.length + ' msgs sin match)' : '';
         _setStatus('Esperando /start ' + code + '… (' + intentos + '/' + maxIntentos + ')' + hint);
         _tgPollingTimeout = setTimeout(poll, 2000);
@@ -1873,6 +1912,7 @@ function _mostrarErrorVinculacion(titulo, msg) {
 
 function _cancelarVinculacion(silent) {
   if (_tgPollingTimeout) { clearTimeout(_tgPollingTimeout); _tgPollingTimeout = null; }
+  _tgPollOffset = 0;
   localStorage.removeItem('tg_pending_code');
   localStorage.removeItem('tg_pending_phone');
   localStorage.removeItem('tg_pending_name');

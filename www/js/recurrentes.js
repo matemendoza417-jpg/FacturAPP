@@ -227,7 +227,8 @@ function _recRenderMaterialesList() {
 function _recMakeItemCard(item, idx, tipo) {
   const div = document.createElement('div');
   div.className = 'item-card';
-  const cant = Number.isInteger(item.cantidad) ? item.cantidad : item.cantidad.toFixed(2);
+  var c = Number(item.cantidad) || 0;
+  const cant = Number.isInteger(c) ? String(c) : c.toFixed(2);
   div.innerHTML = `
     <div class="item-card-body">
       <div class="item-desc">${escapeHtml(item.descripcion)}</div>
@@ -246,34 +247,65 @@ function recDeleteItem(tipo, idx) {
   _recRenderMaterialesList();
 }
 
-function addProductoRec() {
-  const desc = prompt('Descripción del producto:');
-  if (!desc) return;
-  const precio = parseFloat(prompt('Precio unitario (€):'));
-  if (isNaN(precio) || precio <= 0) return;
-  const cant = parseInt(prompt('Cantidad:', '1')) || 1;
-  state.productos.push({
-    descripcion: desc.trim(),
-    cantidad: cant,
-    precio_unitario: precio,
-    subtotal_linea: cant * precio,
-  });
-  _recRenderProductosList();
-  Sound.save();
+function addProductoRec() { _recShowItemDialog('producto'); }
+function addMaterialRec() { _recShowItemDialog('material'); }
+
+function _recShowItemDialog(tipo) {
+  const listId = tipo === 'producto' ? 'rec-productos-list' : 'rec-materiales-list';
+  const existing = document.getElementById(`rec-add-form-${tipo}`);
+  if (existing) { existing.remove(); return; }
+
+  const form = document.createElement('div');
+  form.className = 'add-item-form';
+  form.id = `rec-add-form-${tipo}`;
+  form.innerHTML = `
+    <div class="form-row">
+      <label>Descripción</label>
+      <input type="text" id="rec-inp-desc-${tipo}" placeholder="${tipo === 'producto' ? 'Servicio o trabajo realizado' : 'Material utilizado'}">
+    </div>
+    <div class="add-item-row">
+      <div class="form-row">
+        <label>Cantidad</label>
+        <input type="number" id="rec-inp-cant-${tipo}" value="1" min="0.001" step="0.5">
+      </div>
+      <div class="form-row">
+        <label>Precio unit. (€)</label>
+        <input type="number" id="rec-inp-prec-${tipo}" value="0" min="0" step="0.01">
+      </div>
+    </div>
+    <div class="row-btns">
+      <button class="btn-secondary" onclick="document.getElementById('rec-add-form-${tipo}').remove()">Cancelar</button>
+      <button class="btn-primary" onclick="_recConfirmAddItem('${tipo}')">Agregar</button>
+    </div>
+  `;
+
+  const list = document.getElementById(listId);
+  if (!list || !list.parentNode) return;
+  list.parentNode.insertBefore(form, list.nextSibling);
+  document.getElementById(`rec-inp-desc-${tipo}`).focus();
 }
 
-function addMaterialRec() {
-  const desc = prompt('Descripción del material:');
-  if (!desc) return;
-  const precio = parseFloat(prompt('Precio unitario (€):'));
-  if (isNaN(precio) || precio <= 0) return;
-  const cant = parseInt(prompt('Cantidad:', '1')) || 1;
-  state.materiales.push({
-    descripcion: desc.trim(),
-    cantidad: cant,
-    precio_unitario: precio,
-    subtotal_linea: cant * precio,
-  });
+function _recConfirmAddItem(tipo) {
+  const desc = document.getElementById(`rec-inp-desc-${tipo}`).value.trim();
+  const cant = parseFloat(document.getElementById(`rec-inp-cant-${tipo}`).value);
+  const prec = parseFloat(document.getElementById(`rec-inp-prec-${tipo}`).value);
+
+  if (!desc)                    { showToast('La descripción es obligatoria'); return; }
+  if (isNaN(cant) || cant <= 0) { showToast('Cantidad inválida');             return; }
+  if (isNaN(prec) || prec < 0)  { showToast('Precio inválido');               return; }
+
+  const item = {
+    descripcion:     desc,
+    cantidad:        cant,
+    precio_unitario: prec,
+    subtotal_linea:  Math.round(cant * prec * 100) / 100,
+  };
+
+  if (tipo === 'producto') state.productos.push(item);
+  else                     state.materiales.push(item);
+
+  document.getElementById(`rec-add-form-${tipo}`).remove();
+  _recRenderProductosList();
   _recRenderMaterialesList();
   Sound.save();
 }
