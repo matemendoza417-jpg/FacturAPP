@@ -93,7 +93,7 @@ function showLicenseScreen() {
       </div>
       <p id="license-error" style="color:#dc3545;font-size:12px;margin-bottom:10px;display:none"></p>
       <button class="btn-primary full-width" onclick="handleActivateLicense()" id="license-activate-btn">Activar</button>
-      <button class="btn-secondary full-width" style="margin-top:8px" onclick="handleSkipLicense()">Usar sin activar (limitado)</button>
+      <p style="margin-top:12px;font-size:11px;color:#6B6B76;text-align:center">No tenés clave? Contactanos para comprar tu licencia.</p>
     </div>
   `;
   overlay.classList.remove('hidden');

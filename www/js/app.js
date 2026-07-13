@@ -252,10 +252,12 @@ window.addEventListener('load', () => {
   const fechaEl = document.getElementById('fac-fecha');
   if (fechaEl) fechaEl.value = today;
 
-  // Verificar licencia
+  // Verificar licencia — BLOQUEO TOTAL si no está activada
   try {
-    if (typeof isAppLicensed === 'function' && !isAppLicensed() && !isLicenseSkipped()) {
+    if (typeof isAppLicensed === 'function' && !isAppLicensed()) {
+      document.getElementById('app').classList.add('hidden');
       setTimeout(() => showLicenseScreen(), 1500);
+      return;
     }
   } catch(_) {}
 
