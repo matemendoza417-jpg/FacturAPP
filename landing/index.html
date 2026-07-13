@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FacturAPP — Facturación profesional para autónomos</title>
+  <meta name="description" content="Creá facturas profesionales en menos de un minuto. Enviá por Telegram, controlá tus cobros y trabajá sin Internet. La app de facturación que necesitás.">
+  <meta name="theme-color" content="#8B0000">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ════════════════════════════════════════════════════════════
+       VARIABLES & RESET
+       ════════════════════════════════════════════════════════════ */
+    :root {
+      --red-950: #450000;
+      --red-900: #5C0000;
+      --red-800: #8B0000;
+      --red-700: #A50000;
+      --red-600: #C0392B;
+      --red-500: #D94435;
+      --red-300: #E8837A;
+      --red-200: #F5C6C2;
+      --red-100: #FDECEA;
+      --red-50: #FFF6F5;
+
+      --grey-950: #0A0A0B;
+      --grey-900: #111113;
+      --grey-850: #161618;
+      --grey-800: #1C1C1F;
+      --grey-750: #222225;
+      --grey-700: #2A2A2E;
+      --grey-600: #3A3A40;
+      --grey-500: #6B6B76;
+      --grey-400: #9CA3AF;
+      --grey-300: #D1D5DB;
+      --grey-200: #E5E7EB;
+      --grey-100: #F3F4F6;
+      --white: #FFFFFF;
+
+      --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--grey-950);
+      color: var(--grey-300);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    button { font-family: inherit; cursor: pointer; border: none; }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       NAVBAR
+       ════════════════════════════════════════════════════════════ */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 16px 0;
+      transition: all 0.4s var(--ease-out);
+      background: transparent;
+    }
+
+    .navbar.scrolled {
+      background: rgba(10, 10, 11, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 12px 0;
+    }
+
+    .navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--white);
+      letter-spacing: -0.5px;
+    }
+
+    .nav-logo svg {
+      width: 36px;
+      height: 36px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--grey-400);
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--white); }
+
+    .nav-cta {
+      background: var(--red-700);
+      color: var(--white) !important;
+      padding: 10px 22px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.25s var(--ease-out);
+    }
+
+    .nav-cta:hover {
+      background: var(--red-600);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(139, 0, 0, 0.4);
+    }
+
+    .nav-mobile-btn {
+      display: none;
+      background: none;
+      color: var(--white);
+      font-size: 24px;
+      padding: 4px;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       HERO
+       ════════════════════════════════════════════════════════════ */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 0 80px;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 900px;
+      background: radial-gradient(circle, rgba(139, 0, 0, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 200px;
+      background: linear-gradient(to top, var(--grey-950), transparent);
+      pointer-events: none;
+    }
+
+    .hero .container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(139, 0, 0, 0.15);
+      border: 1px solid rgba(139, 0, 0, 0.3);
+      padding: 8px 18px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--red-300);
+      margin-bottom: 28px;
+      animation: fadeInUp 0.6s var(--ease-out) both;
+    }
+
+    .hero-badge .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--red-500);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
+    }
+
+    .hero-logo {
+      width: 88px;
+      height: 88px;
+      margin: 0 auto 24px;
+      animation: fadeInUp 0.6s 0.1s var(--ease-out) both;
+      filter: drop-shadow(0 8px 32px rgba(139, 0, 0, 0.3));
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 7vw, 72px);
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1.05;
+      letter-spacing: -2.5px;
+      margin-bottom: 20px;
+      animation: fadeInUp 0.6s 0.2s var(--ease-out) both;
+    }
+
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, var(--red-400), var(--red-600), var(--red-400));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(16px, 2.2vw, 20px);
+      color: var(--grey-400);
+      max-width: 560px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+      animation: fadeInUp 0.6s 0.3s var(--ease-out) both;
+    }
+
+    .hero-sub strong {
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .hero-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.6s 0.4s var(--ease-out) both;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--red-700);
+      color: var(--white);
+      padding: 16px 32px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      transition: all 0.3s var(--ease-out);
+      box-shadow: 0 4px 24px rgba(139, 0, 0, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--red-600);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(139, 0, 0, 0.45);
+    }
+
+    .btn-primary svg {
+      transition: transform 0.3s var(--ease-out);
+    }
+
+    .btn-primary:hover svg {
+      transform: translateX(3px);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--grey-300);
+      padding: 16px 32px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s var(--ease-out);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--white);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .hero-stats {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 48px;
+      margin-top: 64px;
+      animation: fadeInUp 0.6s 0.5s var(--ease-out) both;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat .num {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -1px;
+    }
+
+    .hero-stat .lbl {
+      font-size: 13px;
+      color: var(--grey-500);
+      margin-top: 2px;
+    }
+
+    .hero-divider {
+      width: 1px;
+      height: 40px;
+      background: var(--grey-700);
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       SECCIONES GENERALES
+       ════════════════════════════════════════════════════════════ */
+    section {
+      padding: 100px 0;
+      position: relative;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--red-400);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(30px, 4.5vw, 44px);
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      font-size: 17px;
+      color: var(--grey-400);
+      max-width: 580px;
+      line-height: 1.7;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .section-header .section-sub {
+      margin: 0 auto;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       WHAT IS
+       ════════════════════════════════════════════════════════════ */
+    .what-is {
+      background: var(--grey-900);
+      border-top: 1px solid rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .what-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .what-text .big-quote {
+      font-size: clamp(22px, 3vw, 28px);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.5;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+    }
+
+    .what-text .big-quote .highlight {
+      color: var(--red-400);
+    }
+
+    .what-text p {
+      font-size: 16px;
+      color: var(--grey-400);
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .what-visual {
+      position: relative;
+    }
+
+    .what-card {
+      background: var(--grey-850);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .what-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--red-700), var(--red-500), var(--red-700));
+    }
+
+    .what-card-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .what-card-row:last-child { border-bottom: none; }
+
+    .what-card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .what-card-icon.red { background: rgba(139, 0, 0, 0.2); }
+    .what-card-icon.green { background: rgba(16, 185, 129, 0.15); }
+    .what-card-icon.blue { background: rgba(59, 130, 246, 0.15); }
+    .what-card-icon.purple { background: rgba(139, 92, 246, 0.15); }
+
+    .what-card-info strong {
+      display: block;
+      font-size: 14px;
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .what-card-info span {
+      font-size: 12px;
+      color: var(--grey-500);
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       FEATURES
+       ════════════════════════════════════════════════════════════ */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--grey-900);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 18px;
+      padding: 32px;
+      transition: all 0.35s var(--ease-out);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--red-700), transparent);
+      opacity: 0;
+      transition: opacity 0.35s;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(139, 0, 0, 0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .feature-card:hover::before {
+      opacity: 1;
+    }
+
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+      background: rgba(139, 0, 0, 0.12);
+    }
+
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--grey-400);
+      line-height: 1.7;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       SCREENSHOTS
+       ════════════════════════════════════════════════════════════ */
+    .screenshots {
+      background: var(--grey-900);
+      border-top: 1px solid rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .screenshots-scroll {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      padding: 20px 0 40px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .screenshots-scroll::-webkit-scrollbar { display: none; }
+
+    .screenshot-item {
+      flex: 0 0 280px;
+      scroll-snap-align: center;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--grey-850);
+      transition: all 0.3s var(--ease-out);
+    }
+
+    .screenshot-item:hover {
+      border-color: rgba(139, 0, 0, 0.3);
+      transform: scale(1.02);
+    }
+
+    .screenshot-placeholder {
+      width: 100%;
+      aspect-ratio: 9/16;
+      background: linear-gradient(135deg, var(--grey-800), var(--grey-750));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--grey-600);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .screenshot-placeholder .icon {
+      font-size: 40px;
+      opacity: 0.4;
+    }
+
+    .screenshot-caption {
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--grey-400);
+      text-align: center;
+      font-weight: 500;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       VIDEO
+       ════════════════════════════════════════════════════════════ */
+    .video-wrapper {
+      max-width: 720px;
+      margin: 0 auto;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--grey-900);
+      aspect-ratio: 16/9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s var(--ease-out);
+    }
+
+    .video-wrapper:hover {
+      border-color: rgba(139, 0, 0, 0.3);
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+    }
+
+    .video-placeholder {
+      text-align: center;
+      color: var(--grey-500);
+    }
+
+    .video-play-btn {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--red-700);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      transition: all 0.3s var(--ease-out);
+      box-shadow: 0 4px 24px rgba(139, 0, 0, 0.4);
+    }
+
+    .video-wrapper:hover .video-play-btn {
+      transform: scale(1.08);
+      box-shadow: 0 8px 32px rgba(139, 0, 0, 0.5);
+    }
+
+    .video-play-btn svg {
+      margin-left: 3px;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       PRICING
+       ════════════════════════════════════════════════════════════ */
+    .pricing-card {
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--grey-900);
+      border: 1px solid rgba(139, 0, 0, 0.3);
+      border-radius: 24px;
+      padding: 48px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pricing-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--red-700), var(--red-500), var(--red-700));
+    }
+
+    .pricing-badge {
+      display: inline-block;
+      background: rgba(139, 0, 0, 0.2);
+      color: var(--red-300);
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+    }
+
+    .pricing-price {
+      font-size: 64px;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -3px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .pricing-price .currency {
+      font-size: 32px;
+      vertical-align: super;
+      margin-right: 4px;
+      color: var(--red-400);
+    }
+
+    .pricing-period {
+      font-size: 15px;
+      color: var(--grey-500);
+      margin-bottom: 32px;
+    }
+
+    .pricing-features {
+      list-style: none;
+      text-align: left;
+      margin-bottom: 36px;
+    }
+
+    .pricing-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      font-size: 15px;
+      color: var(--grey-300);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .pricing-features li:last-child { border-bottom: none; }
+
+    .pricing-features .check {
+      color: #10B981;
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .pricing-note {
+      font-size: 13px;
+      color: var(--grey-500);
+      margin-top: 16px;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       FAQ
+       ════════════════════════════════════════════════════════════ */
+    .faq-list {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .faq-question {
+      width: 100%;
+      background: none;
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 600;
+      padding: 24px 0;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: color 0.2s;
+    }
+
+    .faq-question:hover { color: var(--red-300); }
+
+    .faq-question .arrow {
+      font-size: 20px;
+      transition: transform 0.3s var(--ease-out);
+      flex-shrink: 0;
+      color: var(--grey-500);
+    }
+
+    .faq-item.open .faq-question .arrow {
+      transform: rotate(180deg);
+      color: var(--red-400);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s var(--ease-out), padding 0.3s;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 300px;
+    }
+
+    .faq-answer p {
+      padding-bottom: 24px;
+      font-size: 15px;
+      color: var(--grey-400);
+      line-height: 1.7;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       CONTACT
+       ════════════════════════════════════════════════════════════ */
+    .contact-box {
+      max-width: 520px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .contact-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 32px;
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 14px 24px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--grey-300);
+      transition: all 0.25s var(--ease-out);
+    }
+
+    .contact-link:hover {
+      background: rgba(139, 0, 0, 0.15);
+      border-color: rgba(139, 0, 0, 0.3);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+
+    .contact-link .icon {
+      font-size: 20px;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       FOOTER
+       ════════════════════════════════════════════════════════════ */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 40px 0;
+      text-align: center;
+    }
+
+    footer p {
+      font-size: 13px;
+      color: var(--grey-600);
+    }
+
+    footer a {
+      color: var(--grey-400);
+      transition: color 0.2s;
+    }
+
+    footer a:hover { color: var(--white); }
+
+    /* ════════════════════════════════════════════════════════════
+       ANIMATIONS
+       ════════════════════════════════════════════════════════════ */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.7s var(--ease-out);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* ════════════════════════════════════════════════════════════
+       RESPONSIVE
+       ════════════════════════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-mobile-btn { display: block; }
+
+      .nav-links.mobile-open {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(10, 10, 11, 0.97);
+        backdrop-filter: blur(20px);
+        justify-content: center;
+        align-items: center;
+        gap: 28px;
+        z-index: 999;
+      }
+
+      .nav-links.mobile-open a {
+        font-size: 20px;
+        color: var(--grey-300);
+      }
+
+      .nav-mobile-close {
+        position: absolute;
+        top: 20px;
+        right: 24px;
+        background: none;
+        color: var(--white);
+        font-size: 28px;
+      }
+
+      .hero { padding: 100px 0 60px; min-height: auto; }
+      .hero-stats { gap: 24px; flex-wrap: wrap; }
+      .hero-stat .num { font-size: 22px; }
+      .hero-divider { display: none; }
+
+      .what-grid { grid-template-columns: 1fr; gap: 40px; }
+
+      .features-grid { grid-template-columns: 1fr; }
+
+      .screenshot-item { flex: 0 0 240px; }
+
+      .pricing-card { padding: 36px 24px; }
+      .pricing-price { font-size: 52px; }
+
+      section { padding: 72px 0; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-buttons { flex-direction: column; width: 100%; }
+      .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+      .hero-stats { gap: 16px; }
+      .contact-links { flex-direction: column; }
+      .contact-link { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════ NAVBAR ═══════════════ -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="#" class="nav-logo">
+        <svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="512" height="512" rx="110" fill="rgba(139,0,0,0.2)"/>
+          <rect x="148" y="108" width="192" height="248" rx="14" fill="rgba(139,0,0,0.15)" stroke="rgba(139,0,0,0.5)" stroke-width="3"/>
+          <rect x="172" y="185" width="96" height="7" rx="3.5" fill="#C0392B"/>
+          <rect x="172" y="207" width="128" height="5" rx="2.5" fill="rgba(139,0,0,0.4)"/>
+          <rect x="172" y="222" width="112" height="5" rx="2.5" fill="rgba(139,0,0,0.3)"/>
+          <rect x="172" y="272" width="152" height="28" rx="6" fill="rgba(139,0,0,0.2)"/>
+          <rect x="182" y="281" width="56" height="10" rx="3" fill="rgba(255,255,255,0.9)"/>
+          <rect x="274" y="281" width="40" height="10" rx="3" fill="#C0392B"/>
+          <circle cx="362" cy="356" r="44" fill="rgba(139,0,0,0.15)" stroke="rgba(139,0,0,0.5)" stroke-width="3"/>
+          <text x="362" y="371" text-anchor="middle" font-family="Georgia,serif" font-size="40" font-weight="700" fill="#C0392B">€</text>
+        </svg>
+        FacturAPP
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#funciones">Funciones</a></li>
+        <li><a href="#capturas">Capturas</a></li>
+        <li><a href="#precio">Precio</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contacto" class="nav-cta">Solicitar demo</a></li>
+      </ul>
+      <button class="nav-mobile-btn" onclick="toggleMobileNav()" aria-label="Menú">☰</button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════ HERO ═══════════════ -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Versión 3.1.0 — Oferta de lanzamiento disponible
+      </div>
+      <svg class="hero-logo" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="512" height="512" rx="110" fill="rgba(139,0,0,0.15)"/>
+        <rect x="148" y="108" width="192" height="248" rx="14" fill="rgba(139,0,0,0.1)" stroke="rgba(192,57,43,0.6)" stroke-width="3"/>
+        <rect x="172" y="185" width="96" height="7" rx="3.5" fill="#C0392B"/>
+        <rect x="172" y="207" width="128" height="5" rx="2.5" fill="rgba(192,57,43,0.4)"/>
+        <rect x="172" y="222" width="112" height="5" rx="2.5" fill="rgba(192,57,43,0.3)"/>
+        <rect x="172" y="237" width="120" height="5" rx="2.5" fill="rgba(192,57,43,0.3)"/>
+        <rect x="172" y="272" width="152" height="28" rx="6" fill="rgba(192,57,43,0.2)"/>
+        <rect x="182" y="281" width="56" height="10" rx="3" fill="rgba(255,255,255,0.9)"/>
+        <rect x="274" y="281" width="40" height="10" rx="3" fill="#C0392B"/>
+        <circle cx="362" cy="356" r="44" fill="rgba(192,57,43,0.12)" stroke="rgba(192,57,43,0.5)" stroke-width="3"/>
+        <text x="362" y="371" text-anchor="middle" font-family="Georgia,serif" font-size="40" font-weight="700" fill="#C0392B">€</text>
+      </svg>
+      <h1>Menos tiempo administrando.<br><span class="gradient">Más tiempo trabajando.</span></h1>
+      <p class="hero-sub">
+        Creá facturas profesionales en menos de un minuto. Enviá por Telegram, controlá tus cobros y trabajá <strong>sin conexión a Internet</strong>.
+      </p>
+      <div class="hero-buttons">
+        <a href="#contacto" class="btn-primary">
+          Solicitar demostración
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a href="#precio" class="btn-secondary">
+          Ver precio
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="num">&lt;1 min</div>
+          <div class="lbl">Para crear una factura</div>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-stat">
+          <div class="num">100%</div>
+          <div class="lbl">Funciona sin Internet</div>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-stat">
+          <div class="num">0€/mes</div>
+          <div class="lbl">Sin suscripciones</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ WHAT IS ═══════════════ -->
+  <section class="what-is" id="que-es">
+    <div class="container">
+      <div class="what-grid">
+        <div class="what-text reveal">
+          <div class="section-label">¿Qué es FacturAPP?</div>
+          <div class="big-quote">
+            La app de facturación que <span class="highlight">tu negocio necesita</span> y que tu competitors no van a tener.
+          </div>
+          <p>
+            FacturAPP nació de un problema real: un autónomo que hacía facturas a mano en Excel. Hoy es una herramienta profesional que genera PDFs de primer nivel, gestiona clientes, controla IVA y envía todo por Telegram.
+          </p>
+          <p>
+            <strong style="color:var(--white)">Una sola app. Sin complicaciones. Sin mensualidades.</strong>
+          </p>
+        </div>
+        <div class="what-visual reveal reveal-delay-2">
+          <div class="what-card">
+            <div class="what-card-row">
+              <div class="what-card-icon red">🧾</div>
+              <div class="what-card-info">
+                <strong>Facturación profesional</strong>
+                <span>PDFs con tu logo y diseño premium</span>
+              </div>
+            </div>
+            <div class="what-card-row">
+              <div class="what-card-icon green">✈️</div>
+              <div class="what-card-info">
+                <strong>Envío directo por Telegram</strong>
+                <span>Un clic para enviar a tu cliente</span>
+              </div>
+            </div>
+            <div class="what-card-row">
+              <div class="what-card-icon blue">📊</div>
+              <div class="what-card-info">
+                <strong>Dashboard de control</strong>
+                <span>Facturado, cobrado, pendiente, gastos</span>
+              </div>
+            </div>
+            <div class="what-card-row">
+              <div class="what-card-icon purple">🔄</div>
+              <div class="what-card-info">
+                <strong>Facturas recurrentes</strong>
+                <span>Se generan solas cada mes</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ FEATURES ═══════════════ -->
+  <section id="funciones">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label">✦ Funciones</div>
+        <h2 class="section-title">Todo lo que necesitás,<br>nada que no necesités</h2>
+        <p class="section-sub">Herramientas pensadas para autónomos reales. Sin configuraciones complicadas.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card reveal">
+          <div class="feature-icon">🧾</div>
+          <h3>Facturas profesionales</h3>
+          <p>Generá PDFs con tu logo, diseño premium y todos los datos fiscales. En menos de un minuto.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon">🧮</div>
+          <h3>Presupuestos con un clic</h3>
+          <p>Creamos el presupuesto, el cliente aprueba y lo convertís en factura al instante. Sin copiar ni pegar.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon">📋</div>
+          <h3>Órdenes de trabajo</h3>
+          <p>Documentá cada trabajo con puntos detallados, observaciones y recomendaciones técnicas.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon">👤</div>
+          <h3>Gestión de clientes</h3>
+          <p>Base de datos completa con búsqueda rápida. No perdés ni un solo dato de contacto.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon">📊</div>
+          <h3>Dashboard de control</h3>
+          <p>Controlá cuánto facturás cada mes de un vistazo. Ingresos, gastos, pendientes, todo visible.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon">✈️</div>
+          <h3>Envío por Telegram</h3>
+          <p>Enviá facturas y presupuestos directo por Telegram. Sin copiar archivos, sin abrir otra app.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon">💾</div>
+          <h3>Copias de seguridad</h3>
+          <p>Backup automático cada 5 minutos con verificación de integridad. Tus datos están seguros.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon">🔄</div>
+          <h3>Facturas recurrentes</h3>
+          <p>Configurá una plantilla y se genera sola cada mes. Nunca más una factura olvidada.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ SCREENSHOTS ═══════════════ -->
+  <section class="screenshots" id="capturas">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label">✦ Capturas</div>
+        <h2 class="section-title">Así se ve FacturAPP</h2>
+        <p class="section-sub">Diseño profesional que da credibilidad a tu negocio.</p>
+      </div>
+    </div>
+    <div class="screenshots-scroll">
+      <div class="screenshot-item reveal">
+        <div class="screenshot-placeholder">
+          <span class="icon">🏠</span>
+          Home / Dashboard
+        </div>
+        <div class="screenshot-caption">Pantalla principal con resumen</div>
+      </div>
+      <div class="screenshot-item reveal reveal-delay-1">
+        <div class="screenshot-placeholder">
+          <span class="icon">🧾</span>
+          Wizard de Factura
+        </div>
+        <div class="screenshot-caption">Creá facturas en 5 pasos</div>
+      </div>
+      <div class="screenshot-item reveal reveal-delay-2">
+        <div class="screenshot-placeholder">
+          <span class="icon">📄</span>
+          PDF Generado
+        </div>
+        <div class="screenshot-caption">PDFs con diseño profesional</div>
+      </div>
+      <div class="screenshot-item reveal">
+        <div class="screenshot-placeholder">
+          <span class="icon">✈️</span>
+          Envío Telegram
+        </div>
+        <div class="screenshot-caption">Enviá directo por Telegram</div>
+      </div>
+      <div class="screenshot-item reveal reveal-delay-1">
+        <div class="screenshot-placeholder">
+          <span class="icon">📊</span>
+          Historial IVA
+        </div>
+        <div class="screenshot-caption">Control de IVA acumulado</div>
+      </div>
+      <div class="screenshot-item reveal reveal-delay-2">
+        <div class="screenshot-placeholder">
+          <span class="icon">🧮</span>
+          Presupuestos
+        </div>
+        <div class="screenshot-caption">Presupuestos convertibles</div>
+      </div>
+      <div class="screenshot-item reveal">
+        <div class="screenshot-placeholder">
+          <span class="icon">📋</span>
+          Órdenes de Trabajo
+        </div>
+        <div class="screenshot-caption">Órdenes técnicas detalladas</div>
+      </div>
+      <div class="screenshot-item reveal reveal-delay-1">
+        <div class="screenshot-placeholder">
+          <span class="icon">🔄</span>
+          Recurrentes
+        </div>
+        <div class="screenshot-caption">Facturas que se repiten solas</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ VIDEO ═══════════════ -->
+  <section id="video">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label">✦ Video</div>
+        <h2 class="section-title">Miralo en acción</h2>
+        <p class="section-sub">1 minuto que te va a convencer.</p>
+      </div>
+      <div class="video-wrapper reveal" id="videoWrapper">
+        <div class="video-placeholder" id="videoPlaceholder">
+          <div class="video-play-btn">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+          <p style="font-size:15px;font-weight:600;color:var(--grey-400)">▶ Ver demo de FacturAPP</p>
+          <p style="font-size:13px;color:var(--grey-600);margin-top:4px">1 minuto • Sin sonido</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ PRICING ═══════════════ -->
+  <section id="precio">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label">✦ Precio</div>
+        <h2 class="section-title">Un precio. Para siempre.</h2>
+        <p class="section-sub">Sin mensualidades. Sin sorpresas. Comprás una vez y es tuyo.</p>
+      </div>
+      <div class="pricing-card reveal">
+        <div class="pricing-badge">🔥 Oferta de lanzamiento</div>
+        <div class="pricing-price"><span class="currency">€</span>70</div>
+        <div class="pricing-period">pago único • para siempre</div>
+        <ul class="pricing-features">
+          <li><span class="check">✓</span> Facturas, presupuestos y órdenes de trabajo</li>
+          <li><span class="check">✓</span> Envío por Telegram ilimitado</li>
+          <li><span class="check">✓</span> Dashboard de control y historial de IVA</li>
+          <li><span class="check">✓</span> Facturas recurrentes automáticas</li>
+          <li><span class="check">✓</span> Copias de seguridad automáticas</li>
+          <li><span class="check">✓</span> Multi-emisor y multi-cliente</li>
+          <li><span class="check">✓</span> Funciona sin conexión a Internet</li>
+          <li><span class="check">✓</span> Todas las actualizaciones incluidas</li>
+          <li><span class="check">✓</span> Soporte por Telegram</li>
+        </ul>
+        <a href="#contacto" class="btn-primary" style="width:100%;justify-content:center">
+          Solicitar demostración
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <p class="pricing-note">Sin suscripciones. Sin costos ocultos. Comprás una vez.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ FAQ ═══════════════ -->
+  <section id="faq" style="background:var(--grey-900);border-top:1px solid rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.04)">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label">✦ Preguntas frecuentes</div>
+        <h2 class="section-title">¿Tenés dudas?</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item reveal">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            ¿Necesita Internet para funcionar?
+            <span class="arrow">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p>No. FacturAPP funciona 100% offline. Podés crear facturas, presupuestos y órdenes sin conexión. Solo necesitás Internet para enviar por Telegram o sincronizar con la nube.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            ¿Los PDFs se ven profesionales?
+            <span class="arrow">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p>Sí. Los PDFs tienen diseño premium con tu logo, colores personalizados y formato A4 completo. Incluyen todos los datos fiscales necesarios.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            ¿Puedo usarlo en mi celular?
+            <span class="arrow">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p>Sí. FacturAPP funciona en Android como app nativa (APK), y en iPhone y computadoras desde el navegador. Es 100% responsive.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            ¿Qué pasa si pierdo el celular?
+            <span class="arrow">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p>Tenés copias de seguridad automáticas cada 5 minutos. Podés exportar un backup completo y restaurarlo en cualquier dispositivo. También podés sincronizar con la nube.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            ¿Puedo enviar facturas por email?
+            <span class="arrow">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p>Sí. Podés compartir PDFs por email, WhatsApp, Telegram o cualquier app de mensajería. También podés descargar el PDF y enviarlo manualmente.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            ¿Actualizan la app?
+            <span class="arrow">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p>Sí. Todas las actualizaciones están incluidas en el precio. La app verifica automáticamente si hay nuevas versiones y te avisa.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ CONTACT ═══════════════ -->
+  <section id="contacto">
+    <div class="container">
+      <div class="contact-box reveal">
+        <div class="section-label">✦ Contacto</div>
+        <h2 class="section-title">¿Listo para facturar mejor?</h2>
+        <p class="section-sub" style="margin:0 auto 16px">
+          Escribinos y te damos una demostración gratuita. Sin compromiso.
+        </p>
+        <p style="font-size:15px;color:var(--white);font-weight:600;margin-bottom:32px">
+          "Creá una factura profesional en menos de un minuto, enviála por Telegram y cobrá más rápido, todo sin conexión a Internet."
+        </p>
+        <div class="contact-links">
+          <a href="https://t.me/TU_USERNAME" class="contact-link" target="_blank">
+            <span class="icon">✈️</span>
+            Telegram
+          </a>
+          <a href="mailto:tucorreo@email.com" class="contact-link">
+            <span class="icon">📧</span>
+            Email
+          </a>
+          <a href="https://wa.me/34611879410" class="contact-link" target="_blank">
+            <span class="icon">💬</span>
+            WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <footer>
+    <div class="container">
+      <p>© 2026 FacturAPP v3.1.0 — Hecho con ❤️ para autónomos.</p>
+      <p style="margin-top:8px">
+        <a href="#">Política de privacidad</a> · <a href="#">Términos de uso</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- ═══════════════ JAVASCRIPT ═══════════════ -->
+  <script>
+    // ── Navbar scroll ──
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // ── Mobile nav ──
+    function toggleMobileNav() {
+      const links = document.getElementById('navLinks');
+      links.classList.toggle('mobile-open');
+      if (links.classList.contains('mobile-open')) {
+        const close = document.createElement('button');
+        close.className = 'nav-mobile-close';
+        close.textContent = '✕';
+        close.onclick = () => { links.classList.remove('mobile-open'); close.remove(); };
+        links.appendChild(close);
+      }
+    }
+
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.addEventListener('click', () => {
+        document.getElementById('navLinks').classList.remove('mobile-open');
+        document.querySelector('.nav-mobile-close')?.remove();
+      });
+    });
+
+    // ── Reveal on scroll ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── FAQ toggle ──
+    function toggleFaq(btn) {
+      const item = btn.parentElement;
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    }
+
+    // ── Smooth scroll for anchor links ──
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

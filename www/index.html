@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#8B0000" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.telegram.org https://*.supabase.co wss://*.supabase.co; worker-src 'self' blob:;" />
+  <title>FacturAPP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    window.CapacitorFilesystem = null;
+    window.CapacitorShare     = null;
+    document.addEventListener('deviceready', () => {}, false);
+  </script>
+  <script src="js/jspdf.min.js"></script>
+  <script>
+    if (typeof window.jspdf === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"><\/script>');
+    }
+  </script>
+  <script src="js/pdf.min.js"></script>
+  <script src="js/supabase.min.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/license.js"></script>
+  <script src="js/updates.js"></script>
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+
+  <!-- SPLASH -->
+  <div id="splash" class="splash">
+    <div class="splash-inner">
+      <div class="splash-logo">
+        <svg class="splash-logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+          <defs>
+            <linearGradient id="sbg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.25)"/>
+              <stop offset="100%" stop-color="rgba(255,255,255,0.05)"/>
+            </linearGradient>
+          </defs>
+          <rect width="512" height="512" rx="110" fill="rgba(255,255,255,0.12)"/>
+          <rect x="148" y="108" width="192" height="248" rx="14" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.35)" stroke-width="2.5"/>
+          <path d="M292 108 L340 156 L292 156 Z" fill="rgba(255,255,255,0.08)"/>
+          <rect x="172" y="185" width="96" height="7" rx="3.5" fill="rgba(255,255,255,0.8)"/>
+          <rect x="172" y="207" width="128" height="5" rx="2.5" fill="rgba(255,255,255,0.4)"/>
+          <rect x="172" y="222" width="112" height="5" rx="2.5" fill="rgba(255,255,255,0.3)"/>
+          <rect x="172" y="237" width="120" height="5" rx="2.5" fill="rgba(255,255,255,0.3)"/>
+          <rect x="172" y="260" width="152" height="1.5" rx="1" fill="rgba(255,255,255,0.25)"/>
+          <rect x="172" y="272" width="152" height="28" rx="6" fill="rgba(255,255,255,0.18)"/>
+          <rect x="182" y="281" width="56" height="10" rx="3" fill="rgba(255,255,255,0.85)"/>
+          <rect x="274" y="281" width="40" height="10" rx="3" fill="rgba(255,255,255,0.9)"/>
+          <circle cx="362" cy="356" r="44" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.45)" stroke-width="2.5"/>
+          <text x="362" y="371" text-anchor="middle" font-family="Georgia,serif" font-size="40" font-weight="700" fill="white" opacity="0.95">€</text>
+        </svg>
+        <h1 class="splash-title">FacturAPP</h1>
+        <p class="splash-sub">Sistema profesional de facturación</p>
+      </div>
+      <div class="splash-bar"><div class="splash-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- APP WRAPPER -->
+  <div id="app" class="app hidden">
+
+    <!-- TOP NAV -->
+    <header class="topbar">
+      <button class="btn-back hidden" id="btnBack" onclick="goBack()" aria-label="Volver">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <h2 class="topbar-title" id="topbarTitle">
+        <span class="topbar-logo" id="topbarLogo">
+          <svg class="topbar-logo-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+            <rect width="512" height="512" rx="110" fill="rgba(255,255,255,0.15)"/>
+            <rect x="148" y="108" width="192" height="248" rx="14" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.4)" stroke-width="3"/>
+            <rect x="172" y="185" width="96" height="7" rx="3.5" fill="rgba(255,255,255,0.9)"/>
+            <rect x="172" y="207" width="128" height="5" rx="2.5" fill="rgba(255,255,255,0.5)"/>
+            <rect x="172" y="222" width="112" height="5" rx="2.5" fill="rgba(255,255,255,0.35)"/>
+            <rect x="172" y="272" width="152" height="28" rx="6" fill="rgba(255,255,255,0.2)"/>
+            <rect x="182" y="281" width="56" height="10" rx="3" fill="rgba(255,255,255,0.9)"/>
+            <rect x="274" y="281" width="40" height="10" rx="3" fill="rgba(255,255,255,0.95)"/>
+            <circle cx="362" cy="356" r="44" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.5)" stroke-width="3"/>
+            <text x="362" y="371" text-anchor="middle" font-family="Georgia,serif" font-size="40" font-weight="700" fill="white">€</text>
+          </svg>
+          <span class="topbar-logo-text">FacturAPP</span>
+        </span>
+        <span id="topbarTitleText" style="display:none"></span>
+      </h2>
+      <div class="topbar-spacer"></div>
+    </header>
+
+    <!-- SCREENS CONTAINER -->
+    <main class="screens">
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: HOME
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen active" id="screen-home">
+        <div class="home-welcome" id="home-welcome">
+          <div class="welcome-mark">🧾</div>
+          <h1>Bienvenido</h1>
+          <p>Tu espacio profesional para facturas, clientes y órdenes.</p>
+          <button class="btn-start" type="button" onclick="startHomeExperience()" aria-label="Empezar">
+            <span>Empezar</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+
+        <div class="home-dashboard hidden" id="home-dashboard">
+          <div class="home-prompt">
+            <h2 class="hero-title" id="hero-greeting">¿Qué quieres realizar?</h2>
+            <p class="hero-sub" id="hero-sub">Elige una acción para empezar a trabajar.</p>
+          </div>
+          <div id="dashboard-mini" class="dashboard-mini"></div>
+          <div class="home-actions">
+            <button class="btn-card btn-primary" onclick="openFacturaWizard()">
+              <span class="btn-card-icon">🧾</span>
+              <div class="btn-card-text">
+                <strong>Nueva Factura</strong>
+                <small>Crear desde cero</small>
+              </div>
+              <svg class="btn-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn-card" onclick="navigate('screen-presupuestos')">
+              <span class="btn-card-icon">🧮</span>
+              <div class="btn-card-text">
+                <strong>Presupuestos</strong>
+                <small>Crear y gestionar</small>
+              </div>
+              <svg class="btn-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn-card" onclick="navigate('screen-orden-trabajo')">
+              <span class="btn-card-icon">📋</span>
+              <div class="btn-card-text">
+                <strong>Órdenes de Trabajo</strong>
+                <small>Crear y gestionar</small>
+              </div>
+              <svg class="btn-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn-card" onclick="navigate('screen-rectificativas')">
+              <span class="btn-card-icon">🔄</span>
+              <div class="btn-card-text">
+                <strong>Notas de Crédito</strong>
+                <small>Rectificativas y abonos</small>
+              </div>
+              <svg class="btn-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn-card" onclick="navigate('screen-facturas')">
+              <span class="btn-card-icon">🗂️</span>
+              <div class="btn-card-text">
+                <strong>Facturas</strong>
+                <small>Ver, compartir y gestionar</small>
+              </div>
+              <svg class="btn-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn-card" onclick="navigate('screen-emisores')">
+              <span class="btn-card-icon">🏢</span>
+              <div class="btn-card-text">
+                <strong>Emisores</strong>
+                <small>Gestionar emisores</small>
+              </div>
+              <svg class="btn-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn-card" onclick="navigate('screen-clientes')">
+              <span class="btn-card-icon">👤</span>
+              <div class="btn-card-text">
+                <strong>Clientes</strong>
+                <small>Gestionar clientes</small>
+              </div>
+              <svg class="btn-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn-card" onclick="navigate('screen-historial')">
+              <span class="btn-card-icon">📊</span>
+              <div class="btn-card-text">
+                <strong>Historial de IVA</strong>
+                <small>Registro acumulado</small>
+              </div>
+              <svg class="btn-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn-card" onclick="navigate('screen-exportar')">
+              <span class="btn-card-icon">💾</span>
+              <div class="btn-card-text">
+                <strong>Exportar Datos</strong>
+                <small>Backup y CSV</small>
+              </div>
+              <svg class="btn-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn-card" onclick="navigate('screen-series')">
+              <span class="btn-card-icon">🔢</span>
+              <div class="btn-card-text">
+                <strong>Series de Numeración</strong>
+                <small>Configurar numeración facturas</small>
+              </div>
+              <svg class="btn-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn-card" onclick="navigate('screen-catalogo')">
+              <span class="btn-card-icon">📚</span>
+              <div class="btn-card-text">
+                <strong>Catálogo de Productos</strong>
+                <small>Gestionar productos y servicios</small>
+              </div>
+              <svg class="btn-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn-card" onclick="navigate('screen-telegram-config')">
+              <img src="img/tg_home_icon.jpg" class="btn-card-icon" alt="Telegram" style="width:28px;height:28px;border-radius:6px;object-fit:cover" />
+              <div class="btn-card-text">
+                <strong>Vincular Telegram</strong>
+                <small>Configurar envíos</small>
+              </div>
+              <svg class="btn-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn-card" onclick="navigate('screen-recurrentes')">
+              <span class="btn-card-icon">🔄</span>
+              <div class="btn-card-text">
+                <strong>Facturas Recurrentes</strong>
+                <small>Generar facturas automáticamente</small>
+              </div>
+              <svg class="btn-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn-card" onclick="navigate('screen-gastos')">
+              <span class="btn-card-icon">💰</span>
+              <div class="btn-card-text">
+                <strong>Gastos</strong>
+                <small>Gestionar gastos deducibles</small>
+              </div>
+              <svg class="btn-card-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: NUEVA FACTURA / PRESUPUESTO (wizard)
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-nueva">
+        <div class="steps-bar">
+          <div class="step active" data-step="1"><span>1</span><small>Emisor</small></div>
+          <div class="step-line"></div>
+          <div class="step" data-step="2"><span>2</span><small>Factura</small></div>
+          <div class="step-line"></div>
+          <div class="step" data-step="3"><span>3</span><small>Cliente</small></div>
+          <div class="step-line"></div>
+          <div class="step" data-step="4"><span>4</span><small>Productos</small></div>
+          <div class="step-line"></div>
+          <div class="step" data-step="5"><span>5</span><small>Totales</small></div>
+        </div>
+
+        <div class="wizard-body" id="wizardBody">
+
+          <!-- STEP 1: EMISOR -->
+          <div class="step-content active" id="step-1">
+            <div class="section-header">
+              <div class="section-icon">🏢</div>
+              <h3>Seleccionar Emisor</h3>
+            </div>
+            <div id="emisores-list" class="card-list"></div>
+            <button class="btn-outline mt-16" onclick="showNewEmisorForm()">
+              <span>＋</span> Nuevo emisor
+            </button>
+            <div id="new-emisor-form" class="form-card hidden">
+              <div class="form-row">
+                <label>Nombre / Razón social</label>
+                <input type="text" id="em-nombre" placeholder="Tu nombre o empresa" />
+              </div>
+              <div class="form-row">
+                <label>Dirección</label>
+                <input type="text" id="em-dir" placeholder="Calle, número, piso" />
+              </div>
+              <div class="form-row">
+                <label>CP y Ciudad</label>
+                <input type="text" id="em-cp" placeholder="03802 Alcoy, Alicante" />
+              </div>
+              <div class="form-row">
+                <label>DOI / CIF / NIF</label>
+                <input type="text" id="em-doi" placeholder="Z1234567X" />
+              </div>
+              <div class="form-row">
+                <label>IBAN / Cuenta bancaria</label>
+                <input type="text" id="em-iban" placeholder="ES12 0000 0000 0000 0000 0000" />
+              </div>
+              <div class="form-row">
+                <label>Logo (opcional, se muestra en el PDF)</label>
+                <input type="file" id="em-logo" accept="image/*" class="file-input" onchange="previewEmisorLogo(this)" />
+                <div id="em-logo-preview" style="margin-top:6px"></div>
+              </div>
+              <div class="form-row">
+                <label>Alias (para guardar)</label>
+                <input type="text" id="em-alias" placeholder="ej: MiEmpresa" />
+              </div>
+              <div class="row-btns">
+                <button class="btn-secondary" onclick="useEmisorForm()">Usar sin guardar</button>
+                <button class="btn-primary" onclick="saveAndUseEmisor()">Guardar y usar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2: DATOS FACTURA -->
+          <div class="step-content" id="step-2">
+            <div class="section-header">
+              <div class="section-icon">🧾</div>
+              <h3>Datos de la Factura</h3>
+            </div>
+            <div class="form-card">
+              <div class="form-row">
+                <label>Fecha</label>
+                <input type="date" id="fac-fecha" />
+              </div>
+              <div class="form-row">
+                <label>Número de factura</label>
+                <input type="text" id="fac-num" placeholder="2026-001" />
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3: CLIENTE -->
+          <div class="step-content" id="step-3">
+            <div class="section-header">
+              <div class="section-icon">👤</div>
+              <h3>Seleccionar Cliente</h3>
+            </div>
+            <div id="clientes-list" class="card-list"></div>
+            <button class="btn-outline mt-16" onclick="showNewClienteForm()">
+              <span>＋</span> Nuevo cliente
+            </button>
+            <div id="new-cliente-form" class="form-card hidden">
+              <div class="form-row">
+                <label>Nombre / Razón social</label>
+                <input type="text" id="cl-nombre" placeholder="Nombre del cliente" />
+              </div>
+              <div class="form-row">
+                <label>Dirección</label>
+                <input type="text" id="cl-dir" placeholder="Calle, número, piso" />
+              </div>
+              <div class="form-row">
+                <label>CP y Ciudad</label>
+                <input type="text" id="cl-cp" placeholder="03802 Alcoy" />
+              </div>
+              <div class="form-row">
+                <label>NIF / CIF / DNI</label>
+                <input type="text" id="cl-nif" placeholder="B12345678" />
+              </div>
+              <div class="form-row">
+                <label>Alias (para guardar)</label>
+                <input type="text" id="cl-alias" placeholder="ej: Iván" />
+              </div>
+              <div class="row-btns">
+                <button class="btn-secondary" onclick="useClienteForm()">Usar sin guardar</button>
+                <button class="btn-primary" onclick="saveAndUseCliente()">Guardar y usar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 4: PRODUCTOS + MATERIALES -->
+          <div class="step-content" id="step-4">
+            <div class="section-header">
+              <div class="section-icon">📦</div>
+              <h3>Productos / Trabajos</h3>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:12px">
+              <button class="btn-outline" onclick="addProducto()" style="flex:1">＋ Agregar producto</button>
+              <button class="btn-outline" onclick="abrirCatalogo()" style="flex:1">📚 Catálogo</button>
+            </div>
+            <div id="productos-list" class="items-list"></div>
+
+            <div class="divider"></div>
+
+            <div class="section-header">
+              <div class="section-icon">🔧</div>
+              <h3>Materiales <span class="badge-optional">opcional</span></h3>
+            </div>
+            <div id="materiales-list" class="items-list"></div>
+            <button class="btn-outline" onclick="addMaterial()">＋ Agregar material</button>
+
+            <div class="divider"></div>
+
+            <div class="form-card">
+              <div class="form-row">
+                <label>IVA (%)</label>
+                <input type="number" id="fac-iva" value="21" min="0" max="100" step="0.5" />
+              </div>
+              <div class="toggle-row">
+                <label>¿Aplicar retención?</label>
+                <label class="toggle">
+                  <input type="checkbox" id="chk-retencion" onchange="toggleRetencion()" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div id="retencion-field" class="form-row hidden">
+                <label>Retención (%)</label>
+                <input type="number" id="fac-ret" value="19" min="0" max="100" step="0.5" />
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 5: RESUMEN -->
+          <div class="step-content" id="step-5">
+            <div class="section-header">
+              <div class="section-icon">💰</div>
+              <h3>Resumen y Generar PDF</h3>
+            </div>
+            <div class="summary-card" id="resumen-card"></div>
+            <button class="btn-generate btn-primary" onclick="generarPDF()">
+              <span>📄</span> Generar y Descargar PDF
+            </button>
+          </div>
+
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-step-back" id="btnStepBack" onclick="prevStep()">← Atrás</button>
+          <button class="btn-step-next" id="btnStepNext" onclick="nextStep()">Siguiente →</button>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: EMISORES
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-emisores">
+        <div class="list-screen-header">
+          <h3>Emisores guardados</h3>
+          <button class="btn-icon-add" onclick="navigate('screen-nuevo-emisor')">＋</button>
+        </div>
+        <div class="search-bar" id="emisores-search-bar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="emisores-search" placeholder="Buscar emisor..." oninput="filtrarEmisores()" />
+          <button class="search-clear" id="emisores-search-clear" onclick="limpiarBusquedaEmisores()">×</button>
+        </div>
+        <div id="emisores-mgmt-list" class="mgmt-list"></div>
+        <div class="empty-state hidden" id="emisores-empty">
+          <span>🏢</span><p>No hay emisores guardados</p>
+        </div>
+      </section>
+
+      <!-- SCREEN: NUEVO EMISOR -->
+      <section class="screen" id="screen-nuevo-emisor">
+        <div class="section-header">
+          <div class="section-icon">🏢</div>
+          <h3>Nuevo Emisor</h3>
+        </div>
+        <div class="form-card">
+          <div class="form-row"><label>Nombre / Razón social</label><input type="text" id="mgmt-em-nombre" placeholder="Tu nombre o empresa" /></div>
+          <div class="form-row"><label>Dirección</label><input type="text" id="mgmt-em-dir" placeholder="Calle, número, piso" /></div>
+          <div class="form-row"><label>CP y Ciudad</label><input type="text" id="mgmt-em-cp" placeholder="03802 Alcoy, Alicante" /></div>
+          <div class="form-row"><label>DOI / CIF / NIF</label><input type="text" id="mgmt-em-doi" placeholder="Z1234567X" /></div>
+          <div class="form-row"><label>IBAN / Cuenta bancaria</label><input type="text" id="mgmt-em-iban" placeholder="ES12 0000 0000 0000 0000 0000" /></div>
+          <div class="form-row"><label>Alias</label><input type="text" id="mgmt-em-alias" placeholder="ej: MiEmpresa" /></div>
+          <div class="form-row"><label>Logo (opcional)</label><input type="file" id="mgmt-em-logo" accept="image/*" class="file-input" onchange="previewMgmtEmisorLogo(this)" /><div id="mgmt-em-logo-preview" style="margin-top:6px"></div></div>
+          <button class="btn-primary full-width" onclick="saveMgmtEmisor()">Guardar emisor</button>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: CLIENTES
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-clientes">
+        <div class="list-screen-header">
+          <h3>Clientes guardados</h3>
+          <button class="btn-icon-add" onclick="navigate('screen-nuevo-cliente')">＋</button>
+        </div>
+        <div class="search-bar" id="clientes-search-bar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="clientes-search" placeholder="Buscar cliente..." oninput="filtrarClientes()" />
+          <button class="search-clear" id="clientes-search-clear" onclick="limpiarBusquedaClientes()">×</button>
+        </div>
+        <div id="clientes-mgmt-list" class="mgmt-list"></div>
+        <div class="empty-state hidden" id="clientes-empty">
+          <span>👤</span><p>No hay clientes guardados</p>
+        </div>
+      </section>
+
+      <!-- SCREEN: NUEVO CLIENTE -->
+      <section class="screen" id="screen-nuevo-cliente">
+        <div class="section-header">
+          <div class="section-icon">👤</div>
+          <h3>Nuevo Cliente</h3>
+        </div>
+        <div class="form-card">
+          <div class="form-row"><label>Nombre / Razón social</label><input type="text" id="mgmt-cl-nombre" placeholder="Nombre del cliente" /></div>
+          <div class="form-row"><label>Dirección</label><input type="text" id="mgmt-cl-dir" placeholder="Calle, número, piso" /></div>
+          <div class="form-row"><label>CP y Ciudad</label><input type="text" id="mgmt-cl-cp" placeholder="03802 Alcoy" /></div>
+          <div class="form-row"><label>NIF / CIF / DNI</label><input type="text" id="mgmt-cl-nif" placeholder="B12345678" /></div>
+          <div class="form-row"><label>Alias</label><input type="text" id="mgmt-cl-alias" placeholder="ej: Pedro" /></div>
+          <button class="btn-primary full-width" onclick="saveMgmtCliente()">Guardar cliente</button>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: HISTORIAL IVA
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-historial">
+        <div class="list-screen-header">
+          <h3>Historial de IVA</h3>
+          <button class="btn-icon-clear" onclick="clearHistorial()">🗑</button>
+        </div>
+        <div id="historial-totales" class="historial-summary"></div>
+        <div id="historial-list" class="historial-list"></div>
+        <div class="empty-state hidden" id="historial-empty">
+          <span>📊</span><p>No hay facturas registradas aún</p>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: FACTURAS (listado — idéntico a presupuestos/órdenes)
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-facturas">
+        <div class="list-screen-header">
+          <h3>Facturas</h3>
+          <button class="btn-icon-add" onclick="openFacturaWizard()">＋</button>
+        </div>
+        <div class="search-bar" id="facturas-search-bar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="facturas-search" placeholder="Buscar por número, cliente o emisor..." oninput="filtrarFacturas()" />
+          <button class="search-clear" id="facturas-search-clear" onclick="limpiarBusquedaFacturas()">×</button>
+        </div>
+        <div class="date-filter-bar" id="facturas-date-filter">
+          <label>Desde:</label>
+          <input type="date" id="facturas-fecha-desde" onchange="filtrarFacturas()" />
+          <label>Hasta:</label>
+          <input type="date" id="facturas-fecha-hasta" onchange="filtrarFacturas()" />
+          <button class="filter-btn" id="facturas-filter-clear" onclick="limpiarFechasFacturas()">Limpiar</button>
+        </div>
+        <div class="cobro-filter-bar" id="facturas-cobro-filter">
+          <button class="cobro-btn active" data-estado="todos" onclick="filtrarPorCobro('todos')">Todos</button>
+          <button class="cobro-btn" data-estado="pendiente" onclick="filtrarPorCobro('pendiente')">⏳ Pendiente</button>
+          <button class="cobro-btn" data-estado="cobrado" onclick="filtrarPorCobro('cobrado')">✓ Cobrado</button>
+        </div>
+        <div id="facturas-stats" class="historial-summary" style="grid-template-columns:1fr 1fr 1fr"></div>
+        <div id="facturas-list" class="facturas-emitidas-list"></div>
+        <div class="empty-state hidden" id="facturas-empty">
+          <span>🧾</span>
+          <p>No hay facturas guardadas aún.<br>Crea tu primera factura.</p>
+          <button class="btn-primary" style="margin-top:16px" onclick="openFacturaWizard()">
+            ＋ Nueva factura
+          </button>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: PRESUPUESTOS (listado)
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-presupuestos">
+        <div class="list-screen-header">
+          <h3>Presupuestos</h3>
+          <button class="btn-icon-add" onclick="presupuestoNuevo()">＋</button>
+        </div>
+        <div id="presupuestos-stats" class="historial-summary" style="grid-template-columns:1fr 1fr"></div>
+        <div id="presupuestos-list" class="facturas-emitidas-list"></div>
+        <div class="empty-state hidden" id="presupuestos-empty">
+          <span>🧮</span>
+          <p>No hay presupuestos todavía.<br>Crea el primero para empezar.</p>
+          <button class="btn-primary" style="margin-top:16px" onclick="presupuestoNuevo()">
+            ＋ Nuevo presupuesto
+          </button>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: EXPORTAR
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-exportar">
+        <div id="exportar-content"></div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: SERIES DE NUMERACIÓN
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-series">
+        <div class="list-screen-header">
+          <h3>Series de Numeración</h3>
+          <button class="btn-icon-add" onclick="mostrarFormSerie()">＋</button>
+        </div>
+        <div id="series-list" class="facturas-emitidas-list"></div>
+        <div id="series-form" class="hidden">
+          <div class="form-group">
+            <label>Nombre de la serie</label>
+            <input type="text" id="serie-nombre" placeholder="Ej: General, B2B, B2C" />
+          </div>
+          <div class="form-group">
+            <label>Prefijo</label>
+            <input type="text" id="serie-prefijo" placeholder="Ej: FACT, PRES, OT" />
+          </div>
+          <div class="form-actions">
+            <button class="btn-secondary" onclick="cancelarFormSerie()">Cancelar</button>
+            <button class="btn-primary" onclick="guardarSerie()">Guardar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: CATÁLOGO DE PRODUCTOS
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-catalogo">
+        <div class="catalogo-header">
+          <div class="catalogo-header-top">
+            <h3>Catálogo de Productos</h3>
+            <span class="catalogo-count" id="catalogo-count">0</span>
+          </div>
+          <div class="catalogo-stats" id="catalogo-stats"></div>
+        </div>
+        <div class="search-bar" id="catalogo-search-bar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="catalogo-search" placeholder="Buscar producto..." oninput="filtrarCatalogo()" />
+          <button class="search-clear" id="catalogo-search-clear" onclick="limpiarBusquedaCatalogo()">×</button>
+        </div>
+        <div class="catalogo-categorias" id="catalogo-categorias"></div>
+        <div id="catalogo-list" class="catalogo-grid"></div>
+        <div id="catalogo-form" class="catalogo-form-panel hidden">
+          <div class="catalogo-form-header">
+            <h4 id="catalogo-form-title">Nuevo Producto</h4>
+            <button class="catalogo-form-close" onclick="cancelarFormCatalogo()">✕</button>
+          </div>
+          <div class="catalogo-form-body">
+            <div class="form-group">
+              <label>Nombre del producto</label>
+              <input type="text" id="cat-nombre" placeholder="Ej: Instalación eléctrica" />
+            </div>
+            <div class="form-group">
+              <label>Descripción</label>
+              <input type="text" id="cat-descripcion" placeholder="Detalle del producto" />
+            </div>
+            <div class="catalogo-form-row">
+              <div class="form-group" style="flex:1">
+                <label>Precio (€)</label>
+                <input type="number" id="cat-precio" min="0" step="0.01" placeholder="0.00" class="catalogo-price-input" />
+              </div>
+              <div class="form-group" style="flex:1.5">
+                <label>Categoría</label>
+                <div class="catalogo-categoria-select" id="cat-categoria-select"></div>
+                <input type="text" id="cat-categoria" placeholder="O escribe una nueva" style="margin-top:6px" />
+              </div>
+            </div>
+            <div class="catalogo-form-actions">
+              <button class="btn-secondary" onclick="cancelarFormCatalogo()">Cancelar</button>
+              <button class="btn-primary" onclick="guardarCatalogoItem()">Guardar producto</button>
+            </div>
+          </div>
+        </div>
+        <div class="empty-state hidden" id="catalogo-empty">
+          <div class="catalogo-empty-icon">📦</div>
+          <p class="catalogo-empty-title">Tu catálogo está vacío</p>
+          <p class="catalogo-empty-sub">Agrega productos para reutilizarlos al crear facturas</p>
+          <button class="btn-generate" onclick="mostrarFormCatalogo()" style="margin-top:20px">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar primer producto
+          </button>
+        </div>
+        <button class="catalogo-fab" onclick="mostrarFormCatalogo()" title="Agregar producto">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: ORDEN DE TRABAJO — LISTADO
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-orden-trabajo">
+        <div class="list-screen-header">
+          <h3>Órdenes de Trabajo</h3>
+          <button class="btn-icon-add" onclick="navigate('screen-orden-nueva')">＋</button>
+        </div>
+        <div id="ordenes-stats" class="historial-summary" style="grid-template-columns:1fr 1fr"></div>
+        <div id="ordenes-list" class="facturas-emitidas-list"></div>
+        <div class="empty-state hidden" id="ordenes-empty">
+          <span>📋</span>
+          <p>No hay órdenes de trabajo todavía.<br>Crea la primera para empezar.</p>
+          <button class="btn-primary" style="margin-top:16px" onclick="navigate('screen-orden-nueva')">
+            ＋ Nueva orden
+          </button>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: NOTAS DE CRÉDITO / RECTIFICATIVAS
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-rectificativas">
+        <div class="list-screen-header">
+          <h3>Notas de Crédito</h3>
+          <button class="btn-icon-add" onclick="nuevaRectificativa()">＋</button>
+        </div>
+        <div class="search-bar" id="rectificativas-search-bar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="rectificativas-search" placeholder="Buscar por número, cliente o emisor..." oninput="filtrarRectificativas()" />
+          <button class="search-clear" id="rectificativas-search-clear" onclick="limpiarBusquedaRectificativas()">×</button>
+        </div>
+        <div id="rectificativas-stats" class="historial-summary" style="grid-template-columns:1fr 1fr 1fr"></div>
+        <div id="rectificativas-list" class="facturas-emitidas-list"></div>
+        <div class="empty-state hidden" id="rectificativas-empty">
+          <span>🔄</span>
+          <p>No hay notas de crédito todavía.<br>Crea una para abonar una factura.</p>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: NUEVA ORDEN DE TRABAJO — WIZARD (igual a factura)
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-orden-nueva">
+
+        <!-- Steps bar — idéntica a la de facturas -->
+        <div class="steps-bar">
+          <div class="step active" data-step="ot-1" id="ot-step-dot-1"><span>1</span><small>Emisor</small></div>
+          <div class="step-line"></div>
+          <div class="step" data-step="ot-2" id="ot-step-dot-2"><span>2</span><small>Datos</small></div>
+          <div class="step-line"></div>
+          <div class="step" data-step="ot-3" id="ot-step-dot-3"><span>3</span><small>Cliente</small></div>
+          <div class="step-line"></div>
+          <div class="step" data-step="ot-4" id="ot-step-dot-4"><span>4</span><small>Trabajo</small></div>
+          <div class="step-line"></div>
+          <div class="step" data-step="ot-5" id="ot-step-dot-5"><span>5</span><small>Guardar</small></div>
+        </div>
+
+        <div class="wizard-body" id="otWizardBody">
+
+          <!-- OT STEP 1: EMISOR -->
+          <div class="step-content active" id="ot-step-1">
+            <div class="section-header">
+              <div class="section-icon">🏢</div>
+              <h3>Seleccionar Emisor</h3>
+            </div>
+            <div id="orden-emisores-list" class="card-list"></div>
+          </div>
+
+          <!-- OT STEP 2: DATOS DE LA ORDEN -->
+          <div class="step-content" id="ot-step-2">
+            <div class="section-header">
+              <div class="section-icon">📋</div>
+              <h3>Datos de la Orden</h3>
+            </div>
+            <div class="form-card">
+              <div class="form-row">
+                <label>Fecha de emisión</label>
+                <input type="date" id="orden-meta-fecha"/>
+              </div>
+              <div class="form-row">
+                <label>Número de orden</label>
+                <input type="text" id="orden-meta-ref" placeholder="OT-0001"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- OT STEP 3: CLIENTE -->
+          <div class="step-content" id="ot-step-3">
+            <div class="section-header">
+              <div class="section-icon">👤</div>
+              <h3>Seleccionar Cliente</h3>
+            </div>
+            <div id="orden-clientes-list" class="card-list"></div>
+          </div>
+
+          <!-- OT STEP 4: TRABAJO -->
+          <div class="step-content" id="ot-step-4">
+            <div class="section-header">
+              <div class="section-icon">🔧</div>
+              <h3>Descripción del Trabajo</h3>
+            </div>
+            <div class="form-card">
+              <div class="form-row">
+                <label>Trabajo a realizar</label>
+                <textarea id="orden-trabajo-realizar" rows="3" placeholder="Describe el trabajo previsto..."></textarea>
+              </div>
+              <div class="form-row">
+                <label>Recomendaciones previas</label>
+                <textarea id="orden-recomendaciones" rows="2" placeholder="Recomendaciones..."></textarea>
+              </div>
+              <div class="form-row">
+                <label>Observaciones iniciales</label>
+                <textarea id="orden-obs-prev" rows="2" placeholder="Observaciones..."></textarea>
+              </div>
+              <div class="form-row">
+                <label>Otros (planificación)</label>
+                <textarea id="orden-otros-prev" rows="2" placeholder="Información adicional..."></textarea>
+              </div>
+            </div>
+
+            <div class="section-header" style="margin-top:14px">
+              <div class="section-icon">✅</div>
+              <h3>Trabajos realizados <span class="badge-optional">puntos</span></h3>
+            </div>
+            <div class="form-card">
+              <div id="orden-puntos-lista"></div>
+              <button class="btn-outline" onclick="ordenAddPunto()">＋ Añadir punto</button>
+            </div>
+
+            <div class="section-header" style="margin-top:14px">
+              <div class="section-icon">⚠️</div>
+              <h3>Notas de seguridad <span class="badge-optional">opcional</span></h3>
+            </div>
+            <div class="form-card">
+              <div class="orden-safety-box" style="margin-bottom:0">
+                <textarea id="orden-notas-seg" rows="4"
+                  placeholder="• Saneamiento de líneas realizados&#10;• Estado de la instalación&#10;• Advertencias de seguridad"></textarea>
+              </div>
+              <div class="form-row" style="margin-top:12px">
+                <label>Observaciones finales</label>
+                <textarea id="orden-obs-post" rows="2" placeholder="Observaciones tras la ejecución..."></textarea>
+              </div>
+              <div class="form-row">
+                <label>Otros (cierre)</label>
+                <textarea id="orden-otros-post" rows="2" placeholder="Información adicional..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- OT STEP 5: RESUMEN + GUARDAR -->
+          <div class="step-content" id="ot-step-5">
+            <div class="section-header">
+              <div class="section-icon">💾</div>
+              <h3>Resumen y Guardar PDF</h3>
+            </div>
+            <div class="summary-card" id="orden-resumen-card"></div>
+            <button class="btn-generate btn-primary" onclick="guardarOrdenTrabajo()">
+              <span>📋</span> Guardar Orden PDF
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Nav igual a wizard de facturas -->
+        <div class="step-nav">
+          <button class="btn-step-back" id="btnOtStepBack" onclick="otPrevStep()">← Atrás</button>
+          <button class="btn-step-next" id="btnOtStepNext" onclick="otNextStep()">Siguiente →</button>
+        </div>
+
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: TELEGRAM CONFIG
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-telegram-config">
+        <div id="telegram-config-content"></div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: FACTURAS RECURRENTES
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-recurrentes">
+        <div class="list-screen-header">
+          <h3>Facturas Recurrentes</h3>
+          <button class="btn-icon-add" onclick="nuevaRecurrente()">＋</button>
+        </div>
+        <div class="hist-stats" id="recurrentes-stats"></div>
+        <div id="recurrentes-list" class="card-list"></div>
+        <div class="empty-state hidden" id="recurrentes-empty">
+          <span>🔄</span>
+          <p>No hay plantillas recurrentes</p>
+          <p style="font-size:12px;color:var(--grey-500);margin-top:4px">Crea una plantilla para generar facturas automáticamente cada mes</p>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: NUEVA RECURRENTE
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-rec-nueva">
+        <div class="section-header">
+          <div class="section-icon">🔄</div>
+          <h3 id="rec-form-title">Nueva Plantilla Recurrente</h3>
+        </div>
+        <div class="form-card">
+          <div class="form-row">
+            <label>Nombre de la plantilla</label>
+            <input type="text" id="rec-nombre" placeholder="Ej: Alquiler mensual, Mantenimiento..." />
+          </div>
+          <div class="form-row">
+            <label>Frecuencia</label>
+            <select id="rec-frecuencia" class="form-select">
+              <option value="mensual">Mensual</option>
+              <option value="bimestral">Bimestral (cada 2 meses)</option>
+              <option value="trimestral">Trimestral (cada 3 meses)</option>
+              <option value="semestral">Semestral (cada 6 meses)</option>
+              <option value="anual">Anual</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:8px">
+            <div class="form-row" style="flex:1">
+              <label>Fecha de inicio</label>
+              <input type="date" id="rec-fecha-inicio" />
+            </div>
+            <div class="form-row" style="flex:1">
+              <label>Fecha fin (opcional)</label>
+              <input type="date" id="rec-fecha-fin" />
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Serie (opcional)</label>
+            <input type="text" id="rec-serie" placeholder="Dejar vacío para usar la activa" />
+          </div>
+          <div class="form-row">
+            <label>Notas (opcional)</label>
+            <textarea id="rec-notas" rows="2" placeholder="Notas internas sobre esta plantilla"></textarea>
+          </div>
+        </div>
+
+        <div class="section-header" style="margin-top:16px">
+          <div class="section-icon">🏢</div>
+          <h3>Emisor</h3>
+        </div>
+        <div id="emisores-list" class="card-list"></div>
+
+        <div class="section-header" style="margin-top:16px">
+          <div class="section-icon">👤</div>
+          <h3>Cliente</h3>
+        </div>
+        <div id="clientes-list" class="card-list"></div>
+
+        <div class="section-header" style="margin-top:16px">
+          <div class="section-icon">📦</div>
+          <h3>Productos</h3>
+        </div>
+        <div id="productos-list" class="card-list"></div>
+        <button class="btn-outline mt-16" onclick="addProducto()">
+          <span>＋</span> Agregar producto
+        </button>
+
+        <div id="materiales-section">
+          <div class="section-header" style="margin-top:16px">
+            <div class="section-icon">🔧</div>
+            <h3>Materiales</h3>
+          </div>
+          <div id="materiales-list" class="card-list"></div>
+          <button class="btn-outline mt-16" onclick="addMaterial()">
+            <span>＋</span> Agregar material
+          </button>
+        </div>
+
+        <button class="btn-generate" onclick="guardarRecurrente()" style="margin-top:20px">
+          💾 Guardar Plantilla
+        </button>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           SCREEN: GASTOS
+      ══════════════════════════════════════════════════════ -->
+      <section class="screen" id="screen-gastos">
+        <div class="list-screen-header">
+          <h3>Gastos Deducibles</h3>
+          <button class="btn-icon-add" onclick="mostrarFormGasto()">＋</button>
+        </div>
+        <div class="hist-stats" id="gastos-stats"></div>
+        <div id="gastos-categorias" class="gastos-cat-bar"></div>
+        <div id="gastos-list" class="card-list"></div>
+        <div class="empty-state hidden" id="gastos-empty">
+          <span>💰</span>
+          <p>No hay gastos registrados</p>
+        </div>
+        <div id="gasto-form" class="catalogo-form-panel hidden">
+          <div class="catalogo-form-header">
+            <h4 id="gasto-form-title">Nuevo Gasto</h4>
+            <button class="catalogo-form-close" onclick="cancelarFormGasto()">✕</button>
+          </div>
+          <div class="catalogo-form-body">
+            <div class="form-group">
+              <label>Descripción</label>
+              <input type="text" id="gasto-descripcion" placeholder="Ej: Compra de materiales" />
+            </div>
+            <div class="catalogo-form-row">
+              <div class="form-group" style="flex:1">
+                <label>Monto (€)</label>
+                <input type="number" id="gasto-monto" min="0" step="0.01" placeholder="0.00" />
+              </div>
+              <div class="form-group" style="flex:1">
+                <label>Fecha</label>
+                <input type="date" id="gasto-fecha" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Categoría</label>
+              <select id="gasto-categoria" class="form-select">
+                <option value="Materiales">Materiales</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Herramientas">Herramientas</option>
+                <option value="Suministros">Suministros</option>
+                <option value="Servicios externos">Servicios externos</option>
+                <option value="Alquiler">Alquiler</option>
+                <option value="Internet/Teléfono">Internet/Teléfono</option>
+                <option value="Formación">Formación</option>
+                <option value="Seguros">Seguros</option>
+                <option value="Mantenimiento">Mantenimiento</option>
+                <option value="Oficina">Oficina</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Otros">Otros</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Método de pago (opcional)</label>
+              <input type="text" id="gasto-metodo" placeholder="Ej: Efectivo, Bizum, Transferencia" />
+            </div>
+            <div class="form-group">
+              <label>Notas (opcional)</label>
+              <textarea id="gasto-notas" rows="2" placeholder="Detalles adicionales"></textarea>
+            </div>
+            <div class="catalogo-form-actions">
+              <button class="btn-secondary" onclick="cancelarFormGasto()">Cancelar</button>
+              <button class="btn-primary" onclick="guardarGastoForm()">Guardar gasto</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- MODAL OVERLAY -->
+  <div id="modal-overlay" class="modal-overlay hidden" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-icon" id="modal-icon">✅</div>
+      <h3 id="modal-title">Título</h3>
+      <p id="modal-msg">Mensaje</p>
+      <button class="btn-primary" onclick="closeModal()">Aceptar</button>
+    </div>
+  </div>
+
+  <!-- AUTH SCREEN (muestra cuando no hay sesión) -->
+  <div id="auth-screen" class="auth-screen hidden">
+    <div class="auth-container">
+      <div class="auth-hero">
+        <div class="auth-logo">
+          <svg width="64" height="64" viewBox="0 0 512 512" fill="none">
+            <defs>
+              <linearGradient id="authbg" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#5C0000"/>
+                <stop offset="100%" stop-color="#C0392B"/>
+              </linearGradient>
+            </defs>
+            <rect width="512" height="512" rx="96" fill="url(#authbg)"/>
+            <text x="256" y="290" text-anchor="middle" font-size="200" font-weight="800" fill="#fff" font-family="sans-serif">F</text>
+          </svg>
+        </div>
+        <h1 class="auth-title">FacturAPP</h1>
+        <p class="auth-sub">Iniciá sesión para sincronizar tus datos en la nube</p>
+      </div>
+
+      <div id="auth-form-login" class="auth-form">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="auth-email" placeholder="tu@email.com" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+        <button class="btn-generate" onclick="handleAuthLogin()" id="auth-login-btn">
+          Iniciar sesión
+        </button>
+        <div style="text-align:right;margin-top:6px">
+          <a href="#" onclick="showAuthRecovery()" style="font-size:12px;color:var(--grey-400);text-decoration:none">¿Olvidaste tu contraseña?</a>
+        </div>
+        <button class="btn-outline" onclick="toggleAuthForm()" style="margin-top:10px">
+          ¿No tenés cuenta? Registrate
+        </button>
+        <button class="btn-secondary" onclick="skipAuth()" style="margin-top:10px">
+          Usar sin cuenta
+        </button>
+      </div>
+
+      <div id="auth-form-register" class="auth-form hidden">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="auth-email-reg" placeholder="tu@email.com" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" id="auth-password-reg" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+        </div>
+        <button class="btn-generate" onclick="handleAuthRegister()" id="auth-register-btn">
+          Crear cuenta
+        </button>
+        <button class="btn-outline" onclick="toggleAuthForm()" style="margin-top:10px">
+          Ya tengo cuenta
+        </button>
+        <button class="btn-secondary" onclick="skipAuth()" style="margin-top:10px">
+          Usar sin cuenta
+        </button>
+      </div>
+
+      <div id="auth-form-recovery" class="auth-form hidden">
+        <div style="text-align:center;margin-bottom:16px">
+          <div style="font-size:32px;margin-bottom:8px">🔑</div>
+          <h3 style="font-size:16px;font-weight:700;color:var(--white);margin:0">Recuperar contraseña</h3>
+          <p style="font-size:13px;color:var(--grey-400);margin-top:4px">Te enviaremos un link para restablecerla</p>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="auth-email-recovery" placeholder="tu@email.com" autocomplete="email" />
+        </div>
+        <button class="btn-generate" onclick="handleAuthRecovery()" id="auth-recovery-btn">
+          Enviar link de recuperación
+        </button>
+        <button class="btn-outline" onclick="showAuthLogin()" style="margin-top:10px">
+          ← Volver al login
+        </button>
+      </div>
+
+      <div id="auth-error" class="auth-error hidden"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/retencion.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/fileService.js"></script>
+  <script src="js/fileActions.js"></script>
+  <script src="js/factura.js"></script>
+  <script src="js/ordenTrabajoPDF.js"></script>
+  <script src="js/presupuestos.js"></script>
+  <script src="js/recurrentes.js"></script>
+  <script src="js/gastos.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    document.addEventListener('focusin', (e) => {
+      const el = e.target;
+      if (!el.matches('input, select, textarea')) return;
+      const wb = document.getElementById('wizardBody');
+      if (wb && wb.contains(el)) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+        return;
+      }
+      // Scroll genérico para cualquier input en pantalla
+      setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+    });
+
+    window.addEventListener('load', () => {
+      const Keyboard = window.Capacitor?.Plugins?.Keyboard;
+      if (!Keyboard) return;
+
+      Keyboard.addListener('keyboardWillShow', (info) => {
+        const wb = document.getElementById('wizardBody');
+        if (wb) {
+          wb.style.paddingBottom = (info.keyboardHeight || 0) + 'px';
+          const active = document.activeElement;
+          if (active && wb.contains(active)) {
+            setTimeout(() => active.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
+          }
+        }
+      });
+
+      Keyboard.addListener('keyboardWillHide', () => {
+        const wb = document.getElementById('wizardBody');
+        if (wb) wb.style.paddingBottom = '';
+      });
+    });
+
+    document.addEventListener('deviceready', () => {}, false);
+  </script>
+
+  <!-- CALCULADORA FLOTANTE -->
+  <div id="calcToggle" style="display:none">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="4" y="2" width="16" height="20" rx="2"/>
+      <line x1="8" y1="6" x2="16" y2="6"/>
+      <line x1="8" y1="10" x2="8" y2="10.01"/>
+      <line x1="12" y1="10" x2="12" y2="10.01"/>
+      <line x1="16" y1="10" x2="16" y2="10.01"/>
+      <line x1="8" y1="14" x2="8" y2="14.01"/>
+      <line x1="12" y1="14" x2="12" y2="14.01"/>
+      <line x1="16" y1="14" x2="16" y2="14.01"/>
+      <line x1="8" y1="18" x2="8" y2="18.01"/>
+      <line x1="12" y1="18" x2="12" y2="18.01"/>
+      <line x1="16" y1="18" x2="16" y2="18.01"/>
+    </svg>
+  </div>
+  <div id="calcWidget" style="display:none">
+    <div id="calcDrag" onmousedown="calcDragStart(event)" ontouchstart="calcDragStart(event)">
+      <span style="display:flex;align-items:center;gap:6px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10.01"/><line x1="12" y1="10" x2="12" y2="10.01"/><line x1="16" y1="10" x2="16" y2="10.01"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="16" y1="14" x2="16" y2="14.01"/><line x1="8" y1="18" x2="8" y2="18.01"/><line x1="12" y1="18" x2="12" y2="18.01"/><line x1="16" y1="18" x2="16" y2="18.01"/></svg> Calculadora</span>
+      <button id="calcClose" onclick="calcToggle()" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()">&times;</button>
+      <div id="calcResize" onmousedown="calcResizeStart(event)" ontouchstart="calcResizeStart(event)"></div>
+    </div>
+    <div id="calcTabs">
+      <button class="calc-tab active" onclick="calcSwitchTab('normal')">Normal</button>
+      <button class="calc-tab" onclick="calcSwitchTab('horas')">Horas</button>
+    </div>
+    <!-- Normal -->
+    <div id="calcNormal" class="calc-panel">
+      <div id="calcDisplay">
+        <div id="calcExpr"></div>
+        <div id="calcResult">0</div>
+      </div>
+      <div id="calcGrid">
+        <button onclick="calcInput('C')">C</button>
+        <button onclick="calcInput('⌫')">⌫</button>
+        <button onclick="calcInput('%')">%</button>
+        <button class="calc-op" onclick="calcInput('÷')">÷</button>
+        <button onclick="calcInput('7')">7</button>
+        <button onclick="calcInput('8')">8</button>
+        <button onclick="calcInput('9')">9</button>
+        <button class="calc-op" onclick="calcInput('×')">×</button>
+        <button onclick="calcInput('4')">4</button>
+        <button onclick="calcInput('5')">5</button>
+        <button onclick="calcInput('6')">6</button>
+        <button class="calc-op" onclick="calcInput('-')">−</button>
+        <button onclick="calcInput('1')">1</button>
+        <button onclick="calcInput('2')">2</button>
+        <button onclick="calcInput('3')">3</button>
+        <button class="calc-op" onclick="calcInput('+')">+</button>
+        <button class="calc-zero" onclick="calcInput('0')">0</button>
+        <button onclick="calcInput('.')">.</button>
+        <button class="calc-op calc-eq" onclick="calcInput('=')">=</button>
+      </div>
+    </div>
+    <!-- Horas -->
+    <div id="calcHoras" class="calc-panel" style="display:none">
+      <div class="calc-field">
+        <label>Precio/hora (€)</label>
+        <input type="number" id="calcRate" placeholder="0.00" step="0.01" oninput="calcHorasCalc()">
+      </div>
+      <div class="calc-field">
+        <label>Horas trabajadas</label>
+        <input type="number" id="calcHours" placeholder="0" step="0.25" oninput="calcHorasCalc()">
+      </div>
+      <div id="calcMaterials">
+        <div class="calc-mat-title">
+          <span>Materiales / Extra</span>
+          <button onclick="calcAddMat()">+ Añadir</button>
+        </div>
+        <div id="calcMatList"></div>
+      </div>
+      <div id="calcHorasResult">
+        <div class="calc-hr-row"><span>Mano de obra</span><span id="calcHandTotal">0,00 €</span></div>
+        <div class="calc-hr-row"><span>Materiales</span><span id="calcMatTotal">0,00 €</span></div>
+        <div class="calc-hr-row calc-hr-total"><span>TOTAL</span><span id="calcGrandTotal">0,00 €</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  /* ── CALCULADORA ── */
+  var _calcOpen = false;
+  var _calcExpr = '';
+  var _calcNum = '0';
+  var _calcOp = '';
+  var _calcPrev = null;
+  var _calcNew = true;
+  var _calcMatCount = 0;
+
+  function calcToggle() {
+    _calcOpen = !_calcOpen;
+    var w = document.getElementById('calcWidget');
+    var t = document.getElementById('calcToggle');
+    if (_calcOpen) {
+      w.style.display = 'block';
+      t.style.display = 'none';
+      calcPosInit();
+    } else {
+      w.style.display = 'none';
+      t.style.display = 'flex';
+    }
+  }
+
+  function calcShow() {
+    var t = document.getElementById('calcToggle');
+    if (t) t.style.display = 'flex';
+  }
+
+  var _calcDragging = false;
+
+  function calcPosInit() {
+    var w = document.getElementById('calcWidget');
+    if (!w._posInit) {
+      w.style.bottom = '80px';
+      w.style.right = '12px';
+      w.style.left = 'auto';
+      w.style.top = 'auto';
+      w._posInit = true;
+    }
+  }
+
+  /* Drag de la calculadora (barra superior) */
+  function calcDragStart(e) {
+    e.preventDefault();
+    var w = document.getElementById('calcWidget');
+    var rect = w.getBoundingClientRect();
+    var cx = e.touches ? e.touches[0].clientX : e.clientX;
+    var cy = e.touches ? e.touches[0].clientY : e.clientY;
+    var offX = cx - rect.left, offY = cy - rect.top;
+    _calcDragging = true;
+    w.style.transition = 'none';
+    function onMove(ev) {
+      if (!_calcDragging) return;
+      var mx = ev.touches ? ev.touches[0].clientX : ev.clientX;
+      var my = ev.touches ? ev.touches[0].clientY : ev.clientY;
+      w.style.left = (mx - offX) + 'px';
+      w.style.top = (my - offY) + 'px';
+      w.style.right = 'auto';
+      w.style.bottom = 'auto';
+    }
+    function onUp() {
+      _calcDragging = false;
+      w.style.transition = '';
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onUp);
+    }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchmove', onMove, {passive:false});
+    document.addEventListener('touchend', onUp);
+  }
+
+  /* ── Icono 📊: tap = abrir, long press 0.5s = drag ── */
+  (function() {
+    var icon = document.getElementById('calcToggle');
+    if (!icon) return;
+    var holdTimer = null;
+    var holding = false;
+    var dragOffX = 0, dragOffY = 0;
+    var wasTouch = false;
+
+    function getXY(e) {
+      if (e.touches && e.touches.length) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      if (e.changedTouches && e.changedTouches.length) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+      return { x: e.clientX, y: e.clientY };
+    }
+
+    function startDrag(e) {
+      holding = true;
+      _calcDragging = true;
+      icon.style.transition = 'none';
+      document.addEventListener('mousemove', onDragMove);
+      document.addEventListener('mouseup', onDragEnd);
+      document.addEventListener('touchmove', onDragMove, {passive:false});
+      document.addEventListener('touchend', onDragEnd);
+    }
+
+    function onDragMove(ev) {
+      if (!_calcDragging) return;
+      var p = getXY(ev);
+      icon.style.left = (p.x - dragOffX) + 'px';
+      icon.style.top = (p.y - dragOffY) + 'px';
+      icon.style.right = 'auto';
+      icon.style.bottom = 'auto';
+    }
+
+    function cleanupDrag() {
+      _calcDragging = false;
+      holding = false;
+      icon.style.transition = '';
+      document.removeEventListener('mousemove', onDragMove);
+      document.removeEventListener('mouseup', onDragEnd);
+      document.removeEventListener('touchmove', onDragMove);
+      document.removeEventListener('touchend', onDragEnd);
+    }
+
+    function onDragEnd() {
+      cleanupDrag();
+    }
+
+    /* ── TOUCH ── */
+    icon.addEventListener('touchstart', function(e) {
+      wasTouch = true;
+      if (_calcOpen) return;
+      var p = getXY(e);
+      var rect = icon.getBoundingClientRect();
+      dragOffX = p.x - rect.left;
+      dragOffY = p.y - rect.top;
+      holding = false;
+      holdTimer = setTimeout(function() { startDrag(); }, 500);
+    }, {passive: true});
+
+    icon.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      clearTimeout(holdTimer);
+      if (!holding && !_calcDragging) {
+        calcToggle();
+      }
+      setTimeout(function() { wasTouch = false; }, 500);
+    });
+
+    icon.addEventListener('touchcancel', function() {
+      clearTimeout(holdTimer);
+      if (_calcDragging) cleanupDrag();
+    });
+
+    /* ── MOUSE (skip if last interaction was touch) ── */
+    icon.addEventListener('mousedown', function(e) {
+      if (wasTouch) return;
+      if (_calcOpen) return;
+      var rect = icon.getBoundingClientRect();
+      dragOffX = e.clientX - rect.left;
+      dragOffY = e.clientY - rect.top;
+      holding = false;
+      holdTimer = setTimeout(function() { startDrag(); }, 500);
+
+      function onMouseUp() {
+        clearTimeout(holdTimer);
+        document.removeEventListener('mouseup', onMouseUp);
+        if (!holding && !_calcDragging) {
+          calcToggle();
+        }
+      }
+      document.addEventListener('mouseup', onMouseUp);
+    });
+  })();
+
+  /* ── Resize handle: drag right edge to resize calcWidget ── */
+  (function() {
+    var handle = document.getElementById('calcResize');
+    var widget = document.getElementById('calcWidget');
+    if (!handle || !widget) return;
+    var startX, startW;
+    function onMove(ev) {
+      var p = ev.touches ? ev.touches[0] : ev;
+      var newW = Math.max(220, Math.min(400, startW + (p.clientX - startX)));
+      widget.style.width = newW + 'px';
+    }
+    function onUp() {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onUp);
+    }
+    handle.addEventListener('mousedown', function(e) {
+      e.stopPropagation();
+      startX = e.clientX;
+      startW = widget.offsetWidth;
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+    handle.addEventListener('touchstart', function(e) {
+      e.stopPropagation();
+      startX = e.touches[0].clientX;
+      startW = widget.offsetWidth;
+      document.addEventListener('touchmove', onMove, {passive:false});
+      document.addEventListener('touchend', onUp);
+    }, {passive: true});
+  })();
+
+  function calcSwitchTab(t) {
+    document.querySelectorAll('.calc-tab').forEach(function(b,i){
+      b.classList.toggle('active', (t==='normal'?i===0:i===1));
+    });
+    document.getElementById('calcNormal').style.display = t==='normal'?'block':'none';
+    document.getElementById('calcHoras').style.display = t==='horas'?'block':'none';
+  }
+
+  function calcInput(v) {
+    if (v === 'C') { _calcNum = '0'; _calcExpr = ''; _calcOp = ''; _calcPrev = null; _calcNew = true; }
+    else if (v === '⌫') {
+      if (_calcNum.length > 1) { _calcNum = _calcNum.slice(0, -1); if (_calcNum === '-') _calcNum = '0'; }
+      else { _calcNum = '0'; _calcNew = true; }
+    }
+    else if (v === '±') { if (_calcNum !== '0') _calcNum = _calcNum.charAt(0)==='-' ? _calcNum.slice(1) : '-'+_calcNum; }
+    else if (v === '%') { _calcNum = String(parseFloat(_calcNum)/100); }
+    else if ('0123456789.'.indexOf(v) >= 0) {
+      if (_calcNew) { _calcNum = v==='.'?'0.':v; _calcNew = false; }
+      else { _calcNum = _calcNum==='0'&&v!=='.' ? v : _calcNum+v; }
+    }
+    else {
+      if (_calcOp && !_calcNew) { calcEval(); }
+      _calcPrev = parseFloat(_calcNum);
+      _calcOp = v;
+      _calcExpr = _calcNum + ' ' + v;
+      _calcNew = true;
+    }
+    if (v === '=') { _calcExpr = ''; _calcOp = ''; }
+    calcDisplayUpdate();
+  }
+
+  function calcEval() {
+    if (_calcPrev === null || !_calcOp) return;
+    var cur = parseFloat(_calcNum);
+    var res = 0;
+    switch(_calcOp) {
+      case '+': res = _calcPrev + cur; break;
+      case '-': case '−': res = _calcPrev - cur; break;
+      case '×': res = _calcPrev * cur; break;
+      case '÷': res = cur !== 0 ? _calcPrev / cur : 'Error'; break;
+    }
+    _calcNum = res === 'Error' ? 'Error' : String(Math.round(res * 1000000) / 1000000);
+    _calcPrev = res;
+    _calcNew = true;
+  }
+
+  function calcDisplayUpdate() {
+    document.getElementById('calcExpr').textContent = _calcExpr;
+    var display = _calcNum;
+    if (!isNaN(parseFloat(display)) && isFinite(display)) {
+      var parts = display.split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      display = parts.join(',');
+    }
+    document.getElementById('calcResult').textContent = display;
+  }
+
+  /* ── HORAS ── */
+  function calcAddMat() {
+    _calcMatCount++;
+    var div = document.createElement('div');
+    div.className = 'calc-mat-item';
+    div.innerHTML = '<input type="text" placeholder="Detalle" class="calc-mat-desc" oninput="calcHorasCalc()"><input type="number" placeholder="0.00" step="0.01" class="calc-mat-price" oninput="calcHorasCalc()"><button onclick="this.parentElement.remove();calcHorasCalc()">×</button>';
+    document.getElementById('calcMatList').appendChild(div);
+  }
+
+  function calcHorasCalc() {
+    var rate = parseFloat(document.getElementById('calcRate').value) || 0;
+    var hours = parseFloat(document.getElementById('calcHours').value) || 0;
+    var hand = rate * hours;
+    var matTotal = 0;
+    document.querySelectorAll('.calc-mat-item').forEach(function(el){
+      matTotal += parseFloat(el.querySelector('.calc-mat-price').value) || 0;
+    });
+    var total = hand + matTotal;
+    document.getElementById('calcHandTotal').textContent = hand.toFixed(2).replace('.',',') + ' €';
+    document.getElementById('calcMatTotal').textContent = matTotal.toFixed(2).replace('.',',') + ' €';
+    document.getElementById('calcGrandTotal').textContent = total.toFixed(2).replace('.',',') + ' €';
+  }
+  </script>
+</body>
+</html>

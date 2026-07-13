@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+
+# Capacitor native builds
+android/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+
+# Backup files
+*.bak
+*.backup
+
+# Supabase
+supabase/.temp/
+supabase/.env
+
+# Capacitor
+capacitor.config.json
+!capacitor.config.json.example
+
+# Local storage data (user data)
+*.sqlite
+*.db
+
+# APK builds
+*.apk
+*.aab
