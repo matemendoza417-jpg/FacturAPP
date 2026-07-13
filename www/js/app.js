@@ -185,6 +185,19 @@ async function handleDeleteAccount() {
   }, null);
 }
 
+function toggleSound() {
+  const enabled = Sound.toggle();
+  const icon = document.getElementById('soundIcon');
+  if (icon) {
+    if (enabled) {
+      icon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>';
+    } else {
+      icon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>';
+    }
+  }
+  showToast(enabled ? '🔊 Sonido activado' : '🔇 Sonido desactivado');
+}
+
 function _refreshCurrentScreen() {
   try {
     if (state.currentScreen === 'screen-home') renderHome();
@@ -345,6 +358,7 @@ function startHomeExperience() {
   const dashboard = document.getElementById('home-dashboard');
   if (!welcome || !dashboard) return;
   if (welcome.classList.contains('launching') || welcome.classList.contains('hidden')) return;
+  Sound.welcome();
 
   welcome.classList.add('launching');
   setTimeout(() => {
@@ -574,6 +588,7 @@ function resetFactura() {
 function openFacturaWizard() {
   state.docType         = 'factura';
   state._skipResetNueva = false;
+  Sound.click();
   if (!state.screenHistory.includes('screen-facturas') && state.currentScreen !== 'screen-facturas') {
     state.screenHistory.push(state.currentScreen);
   }
@@ -1210,6 +1225,7 @@ async function _doGenerarPDF(sobrescribirNombre = null) {
   } else if (state.screenHistory.includes('screen-facturas')) {
     navigate('screen-facturas');
   }
+  Sound.save();
   setTimeout(() => preguntarTelegram(pdfData), 600);
 
   // Recordatorio de cobro: si el usuario activó el checkbox
@@ -2164,6 +2180,7 @@ function otGoToStep(n) {
   const target = document.getElementById(`ot-step-${n}`);
   if (target) target.classList.add('active');
   window._otStep = n;
+  Sound.step();
 
   // Actualizar dots
   for (let i = 1; i <= 5; i++) {
@@ -2198,7 +2215,7 @@ function otNextStep() {
 
 function otPrevStep() {
   const n = window._otStep || 1;
-  if (n > 1) otGoToStep(n - 1);
+  if (n > 1) { Sound.stepBack(); otGoToStep(n - 1); }
 }
 
 function renderOrdenResumen() {
@@ -2289,6 +2306,7 @@ function selectOrdenEmisor(emisor) {
   window._ordenEmisor = emisor;
   showToast(`Emisor: ${emisor.alias || emisor.nombre}`);
   renderOrdenEmisorList();
+  Sound.select();
 }
 
 function renderOrdenClienteList() {
@@ -2316,6 +2334,7 @@ function selectOrdenCliente(cliente) {
   window._ordenCliente = cliente;
   showToast(`Cliente: ${cliente.alias || cliente.nombre}`);
   renderOrdenClienteList();
+  Sound.select();
 }
 
 function renderOrdenPuntos() {
@@ -2344,6 +2363,7 @@ function ordenAddPunto() {
   renderOrdenPuntos();
   const cont = document.getElementById('orden-puntos-lista');
   if (cont) cont.lastChild?.querySelector('textarea')?.focus();
+  Sound.click();
 }
 
 function ordenRemovePunto(idx) {
@@ -2351,6 +2371,7 @@ function ordenRemovePunto(idx) {
   window._ordenPuntos.splice(idx, 1);
   window._ordenPuntos.forEach((p, i) => { p.numero = i + 1; });
   renderOrdenPuntos();
+  Sound.delete();
 }
 
 function _formatOrdenDate(fechaRaw) {
@@ -2373,10 +2394,11 @@ function _getOrdenMetaValues() {
 
 async function guardarOrdenTrabajo() {
   const meta = _getOrdenMetaValues();
-  if (!meta.emisor)   { showToast('Seleccioná un emisor');   return; }
-  if (!meta.cliente)  { showToast('Seleccioná un cliente');  return; }
-  if (!meta.numero)   { showToast('Ingresá el número de orden'); return; }
-  if (!meta.fechaRaw) { showToast('Seleccioná la fecha');    return; }
+  if (!meta.emisor)   { showToast('Seleccioná un emisor');   Sound.error(); return; }
+  if (!meta.cliente)  { showToast('Seleccioná un cliente');  Sound.error(); return; }
+  if (!meta.numero)   { showToast('Ingresá el número de orden'); Sound.error(); return; }
+  if (!meta.fechaRaw) { showToast('Seleccioná la fecha');    Sound.error(); return; }
+  Sound.generate();
 
   const id = `ot_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 
@@ -2482,10 +2504,12 @@ function renderMgmtEmisores() {
 }
 
 function confirmDeleteEmisor(alias) {
+  Sound.tap();
   showConfirmDialog('🗑️', 'Eliminar emisor', `¿Eliminar emisor "${alias}"?`, () => {
     deleteEmisor(alias);
     renderMgmtEmisores();
     showToast('Emisor eliminado');
+    Sound.delete();
   }, () => {});
 }
 
@@ -2499,11 +2523,12 @@ function saveMgmtEmisor() {
     alias:           document.getElementById('mgmt-em-alias').value.trim(),
     logo:            state._mgmtEmisorLogo || null,
   };
-  if (!em.nombre || !em.doi) { showToast('Nombre y DOI son obligatorios'); return; }
+  if (!em.nombre || !em.doi) { showToast('Nombre y DOI son obligatorios'); Sound.error(); return; }
   if (!em.alias) em.alias = em.nombre.split(' ')[0];
   saveEmisor(em);
   goBack();
   showModal('✅', 'Emisor guardado', `"${em.alias}" guardado correctamente.`);
+  Sound.save();
 }
 
 function previewMgmtEmisorLogo(input) {
@@ -2548,10 +2573,12 @@ function renderMgmtClientes() {
 }
 
 function confirmDeleteCliente(alias) {
+  Sound.tap();
   showConfirmDialog('🗑️', 'Eliminar cliente', `¿Eliminar cliente "${alias}"?`, () => {
     deleteCliente(alias);
     renderMgmtClientes();
     showToast('Cliente eliminado');
+    Sound.delete();
   }, () => {});
 }
 
@@ -2563,11 +2590,12 @@ function saveMgmtCliente() {
     nif:       document.getElementById('mgmt-cl-nif').value.trim(),
     alias:     document.getElementById('mgmt-cl-alias').value.trim(),
   };
-  if (!cl.nombre || !cl.nif) { showToast('Nombre y NIF son obligatorios'); return; }
+  if (!cl.nombre || !cl.nif) { showToast('Nombre y NIF son obligatorios'); Sound.error(); return; }
   if (!cl.alias) cl.alias = cl.nombre.split(' ')[0];
   saveCliente(cl);
   goBack();
   showModal('✅', 'Cliente guardado', `"${cl.alias}" guardado correctamente.`);
+  Sound.save();
 }
 
 // ── HISTORIAL IVA ─────────────────────────────────────────────
@@ -3062,6 +3090,8 @@ function showToast(msg) {
   t.classList.add('show');
   clearTimeout(window._toastTimer);
   window._toastTimer = setTimeout(function() { t.classList.remove('show'); }, 2800);
+  if (msg.includes('❌') || msg.includes('Error') || msg.includes('obligatorio') || msg.includes('inválido')) Sound.error();
+  else Sound.notification();
 }
 
 function showModal(icon, title, msg) {
@@ -3089,9 +3119,11 @@ function showModal(icon, title, msg) {
   }
   o.classList.remove('hidden');
   o.onclick = closeModal;
+  Sound.pop();
 }
 
 function closeModal() {
+  Sound.tap();
   const overlay = document.getElementById('modal-overlay');
   if (!overlay) return;
   overlay.classList.add('hidden');
@@ -3114,6 +3146,7 @@ function showConfirmDialog(icon, title, msg, onSi, onNo) {
   const overlay = document.getElementById('modal-overlay');
   if (!overlay) return;
   overlay.classList.remove('hidden');
+  Sound.pop();
   overlay.onclick = null;
 
   overlay.innerHTML = `
