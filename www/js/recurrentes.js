@@ -164,6 +164,120 @@ function showRecContextMenu(id) {
   overlay.onclick = closeModal;
 }
 
+// ── Render functions para formulario recurrente (IDs propios) ──
+function _recRenderEmisorList() {
+  const container = document.getElementById('rec-emisores-list');
+  if (!container) return;
+  const emisores = getEmisores();
+  container.innerHTML = '';
+
+  emisores.forEach(em => {
+    const div = document.createElement('div');
+    div.className = 'select-card' + (state.emisor?.nombre === em.nombre ? ' selected' : '');
+    div.setAttribute('role', 'button');
+    div.innerHTML = `
+      <div class="select-card-body">
+        <strong>${escapeHtml(em.nombre)}</strong>
+        <small>${escapeHtml(em.cp_ciudad)} · ${escapeHtml(em.doi)}</small>
+      </div>
+      ${em._predefined ? '<span class="select-card-badge">Predefinido</span>' : ''}
+      <div class="select-check" aria-hidden="true"></div>
+    `;
+    div.onclick = () => { state.emisor = em; _recRenderEmisorList(); Sound.select(); };
+    container.appendChild(div);
+  });
+}
+
+function _recRenderClienteList() {
+  const container = document.getElementById('rec-clientes-list');
+  if (!container) return;
+  const clientes = getClientes();
+  container.innerHTML = '';
+
+  clientes.forEach(cl => {
+    const div = document.createElement('div');
+    div.className = 'select-card' + (state.cliente?.nombre === cl.nombre ? ' selected' : '');
+    div.setAttribute('role', 'button');
+    div.innerHTML = `
+      <div class="select-card-body">
+        <strong>${escapeHtml(cl.nombre)}</strong>
+        <small>${escapeHtml(cl.direccion || '')} · ${escapeHtml(cl.doi || cl.email || '')}</small>
+      </div>
+      <div class="select-check" aria-hidden="true"></div>
+    `;
+    div.onclick = () => { state.cliente = cl; _recRenderClienteList(); Sound.select(); };
+    container.appendChild(div);
+  });
+}
+
+function _recRenderProductosList() {
+  const container = document.getElementById('rec-productos-list');
+  if (!container) return;
+  container.innerHTML = '';
+  state.productos.forEach((p, i) => container.appendChild(_recMakeItemCard(p, i, 'producto')));
+}
+
+function _recRenderMaterialesList() {
+  const container = document.getElementById('rec-materiales-list');
+  if (!container) return;
+  container.innerHTML = '';
+  state.materiales.forEach((m, i) => container.appendChild(_recMakeItemCard(m, i, 'material')));
+}
+
+function _recMakeItemCard(item, idx, tipo) {
+  const div = document.createElement('div');
+  div.className = 'item-card';
+  const cant = Number.isInteger(item.cantidad) ? item.cantidad : item.cantidad.toFixed(2);
+  div.innerHTML = `
+    <div class="item-card-body">
+      <div class="item-desc">${escapeHtml(item.descripcion)}</div>
+      <div class="item-meta">${cant} × ${item.precio_unitario.toFixed(2)} €</div>
+    </div>
+    <div class="item-card-total">${item.subtotal_linea.toFixed(2)} €</div>
+    <button class="btn-delete" onclick="recDeleteItem('${tipo}',${idx})" aria-label="Eliminar">✕</button>
+  `;
+  return div;
+}
+
+function recDeleteItem(tipo, idx) {
+  if (tipo === 'producto') state.productos.splice(idx, 1);
+  else state.materiales.splice(idx, 1);
+  _recRenderProductosList();
+  _recRenderMaterialesList();
+}
+
+function addProductoRec() {
+  const desc = prompt('Descripción del producto:');
+  if (!desc) return;
+  const precio = parseFloat(prompt('Precio unitario (€):'));
+  if (isNaN(precio) || precio <= 0) return;
+  const cant = parseInt(prompt('Cantidad:', '1')) || 1;
+  state.productos.push({
+    descripcion: desc.trim(),
+    cantidad: cant,
+    precio_unitario: precio,
+    subtotal_linea: cant * precio,
+  });
+  _recRenderProductosList();
+  Sound.save();
+}
+
+function addMaterialRec() {
+  const desc = prompt('Descripción del material:');
+  if (!desc) return;
+  const precio = parseFloat(prompt('Precio unitario (€):'));
+  if (isNaN(precio) || precio <= 0) return;
+  const cant = parseInt(prompt('Cantidad:', '1')) || 1;
+  state.materiales.push({
+    descripcion: desc.trim(),
+    cantidad: cant,
+    precio_unitario: precio,
+    subtotal_linea: cant * precio,
+  });
+  _recRenderMaterialesList();
+  Sound.save();
+}
+
 // ── CRUD ──────────────────────────────────────────────────
 function nuevaRecurrente() {
   state._recEditando = null;
@@ -193,10 +307,10 @@ function editarRecurrente(id) {
   document.getElementById('rec-form-title').textContent = 'Editar Plantilla Recurrente';
   navigate('screen-rec-nueva');
 
-  renderEmisorList();
-  renderClienteList();
-  renderProductosList();
-  renderMaterialesList();
+  _recRenderEmisorList();
+  _recRenderClienteList();
+  _recRenderProductosList();
+  _recRenderMaterialesList();
 }
 
 function _resetFormRecurrente() {
@@ -210,10 +324,10 @@ function _resetFormRecurrente() {
   state.cliente = null;
   state.productos = [];
   state.materiales = [];
-  renderEmisorList();
-  renderClienteList();
-  renderProductosList();
-  renderMaterialesList();
+  _recRenderEmisorList();
+  _recRenderClienteList();
+  _recRenderProductosList();
+  _recRenderMaterialesList();
 }
 
 function guardarRecurrente() {
@@ -243,13 +357,8 @@ function guardarRecurrente() {
     cliente: { ...state.cliente },
     productos: JSON.parse(JSON.stringify(state.productos)),
     materiales: JSON.parse(JSON.stringify(state.materiales)),
-    iva: document.getElementById('fac-iva')?.value || '21',
-    retencion: {
-      rate: Number(document.getElementById('fac-ret')?.value || 19),
-      enabled: document.getElementById('chk-retencion')?.checked || false,
-      showInPdf: document.getElementById('chk-retencion')?.checked || false,
-      applyToTotal: document.getElementById('chk-retencion')?.checked || false,
-    },
+    iva: '21',
+    retencion: { rate: 19, enabled: false, showInPdf: false, applyToTotal: false },
     activa: true,
     ultimaGeneracion: null,
     proximaGeneracion: fechaInicio || new Date().toISOString().split('T')[0],
@@ -274,6 +383,7 @@ function toggleRecurrenteActiva(id) {
   if (idx < 0) return;
   recs[idx].activa = !recs[idx].activa;
   saveRecurrentes(recs);
+  renderRecurrentes();
   showToast(recs[idx].activa ? 'Plantilla activada' : 'Plantilla pausada');
   Sound.tap();
 }
@@ -307,13 +417,18 @@ async function generarRecurrenteAhora(id) {
   navigate('screen-nueva');
 
   setTimeout(() => {
-    document.getElementById('fac-num').value = sugerirNumeroFactura();
-    document.getElementById('fac-fecha').value = new Date().toISOString().split('T')[0];
-    document.getElementById('fac-iva').value = rec.iva || '21';
+    const numEl = document.getElementById('fac-num');
+    const fechaEl = document.getElementById('fac-fecha');
+    const ivaEl = document.getElementById('fac-iva');
+    if (numEl) numEl.value = typeof sugerirNumeroFactura === 'function' ? sugerirNumeroFactura() : '';
+    if (fechaEl) fechaEl.value = new Date().toISOString().split('T')[0];
+    if (ivaEl) ivaEl.value = rec.iva || '21';
     if (rec.retencion?.enabled) {
-      document.getElementById('chk-retencion').checked = true;
-      document.getElementById('fac-ret').value = String(rec.retencion.rate || 19);
-      toggleRetencion();
+      const chkRet = document.getElementById('chk-retencion');
+      const facRet = document.getElementById('fac-ret');
+      if (chkRet) chkRet.checked = true;
+      if (facRet) facRet.value = String(rec.retencion.rate || 19);
+      if (typeof toggleRetencion === 'function') toggleRetencion();
     }
     renderEmisorList();
     renderClienteList();
@@ -335,6 +450,26 @@ function autoGenerarRecurrentes() {
     if (rec.fechaFin && rec.fechaFin < hoy) return;
     if (rec.proximaGeneracion > hoy) return;
 
+    // Crear factura real desde la plantilla
+    try {
+      const facturaData = {
+        emisor: { ...rec.emisor },
+        cliente: { ...rec.cliente },
+        productos: JSON.parse(JSON.stringify(rec.productos || [])),
+        materiales: JSON.parse(JSON.stringify(rec.materiales || [])),
+        iva: rec.iva || '21',
+        retencion: rec.retencion || { rate: 19, enabled: false },
+        notas: rec.notas || '',
+        serie: rec.serie || '',
+      };
+
+      if (typeof generarFacturaAutomatica === 'function') {
+        generarFacturaAutomatica(facturaData);
+      }
+    } catch (e) {
+      console.warn('Error generando factura recurrente:', e.message);
+    }
+
     rec.ultimaGeneracion = hoy;
     rec.proximaGeneracion = _sumaFrecuencia(hoy, rec.frecuencia);
     generadas++;
@@ -342,7 +477,7 @@ function autoGenerarRecurrentes() {
 
   if (generadas > 0) {
     saveRecurrentes(recs);
-    showToast(`📅 ${generadas} factura(s) recurrente(s) vencida(s). Revisá la lista.`);
+    showToast(`📅 ${generadas} factura(s) recurrente(s) generada(s)`);
   }
 }
 

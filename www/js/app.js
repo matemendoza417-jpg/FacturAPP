@@ -485,7 +485,7 @@ function navigate(screenId) {
   else if (screenId === 'screen-catalogo')          renderCatalogoList();
   else if (screenId === 'screen-rectificativas')    renderRectificativas();
   else if (screenId === 'screen-recurrentes')       renderRecurrentes();
-  else if (screenId === 'screen-rec-nueva')         { updateWizardLabels(); renderEmisorList(); renderClienteList(); renderProductosList(); renderMaterialesList(); }
+  else if (screenId === 'screen-rec-nueva')         { _recRenderEmisorList(); _recRenderClienteList(); _recRenderProductosList(); _recRenderMaterialesList(); }
   else if (screenId === 'screen-gastos')            renderGastos();
 }
 
